@@ -3,6 +3,7 @@ function setup() {
 }
 
 function draw() {
+	st.p5.updateTime();
 	st.p5.drawSky();
 	st.p5.drawPlanes();
 }
@@ -13,6 +14,12 @@ function preload() {
 
 st.p5 = {
 	ratio: 500,
+	
+	time: { 
+		current: 0,
+		last: 0,
+		delta: 0
+	},
 
 	real: {
 		height: 10000,
@@ -35,6 +42,8 @@ st.p5 = {
 
 	drawSky: function() {
 		var ratio = st.p5.real.ratio;
+		
+		background(255);
 
 		stroke(155, 155, 255);
 		strokeWeight(0.5);
@@ -148,5 +157,41 @@ st.p5 = {
 			var t = "(" + Math.round(plane.x) + ", " + Math.round(plane.y) + ")";
 			text(t, x - 20, y + 30);
 		}
+	},
+	
+	updateTime: function() {
+		var current = millis();
+		st.p5.time.current = current;
+	
+		var last = st.p5.time.last;
+		if (current) {
+			var delta = current - last;
+			st.p5.time.delta = delta;			
+			st.p5.updatePositions();
+		}
+		st.p5.time.last = current;
+	},
+	
+	updatePositions: function() {
+		var planes = st.planes.planes;
+		for (var i = 0; i < planes.length; i++) {
+			var plane = planes[i];
+
+			var x = plane.x;
+			var y = plane.y;
+			var a = plane.a;
+			var v = plane.v;
+			var canvasa = 90.0 - a;
+			var mc = Math.cos(canvasa / 180.0 * Math.PI);
+			var ms = Math.sin(canvasa / 180.0 * Math.PI);
+			//st.log("a[" + a + "], canvasa[" + canvasa + "], mc[" + mc + ", ms[" + ms + "]");
+
+			x += mc * v * st.p5.time.delta / 500;
+			y += ms * v * st.p5.time.delta / 500;
+			
+			plane.x = x;
+			plane.y = y;
+		}
 	}
+	
 };

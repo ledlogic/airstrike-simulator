@@ -20,7 +20,8 @@ st.planes = {
 			type: type,			
 			x: x, 
 			y: y,
-			a: a
+			a: a,
+			v: 20
 		};
 		return plane;
 	}
