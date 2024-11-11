@@ -84,8 +84,6 @@ st.p5 = {
 	},
 
 	drawPlanes: function() {
-		strokeWeight(3);
-
 		var ratio = st.p5.real.ratio;
 		var planes = st.planes.planes;
 		for (var i = 0; i < planes.length; i++) {
@@ -98,14 +96,15 @@ st.p5 = {
 
 			// fuselage
 			stroke('gray');
+			strokeWeight(3);
 			fill(0, 0, 0, 0);
 			var r = 10;
 			var x1 = x + 0.75 * r * Math.cos(canvasa / 180.0 * Math.PI);
 			var y1 = y - 0.75 * r * Math.sin(canvasa / 180.0 * Math.PI);
-			var x2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI);
-			var y2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI)
-			line(x1, y1, x2, y2);
-			
+			var fx2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI);
+			var fy2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI)
+			line(x1, y1, fx2, fy2);
+
 			// wing
 			var winga = canvasa + 90.0;
 			var r = 10.0;
@@ -114,7 +113,20 @@ st.p5 = {
 			var x2 = x + r * Math.cos((winga + 180.0) / 180.0 * Math.PI);
 			var y2 = y - r * Math.sin((winga + 180.0) / 180.0 * Math.PI)
 			line(x1, y1, x2, y2);
-			
+
+			// tail
+			strokeWeight(2.5);
+			var r = 3;
+			var rr = 0.9;
+			var tx2 = ((1-rr) * x + rr*fx2);
+			var ty2 = ((1-rr) * y + rr*fy2);
+			var x1 = tx2 + r * Math.cos(winga / 180.0 * Math.PI);
+			var y1 = ty2 - r * Math.sin(winga / 180.0 * Math.PI);
+			var x2 = tx2 + r * Math.cos((winga + 180.0) / 180.0 * Math.PI);
+			var y2 = ty2 - r * Math.sin((winga + 180.0) / 180.0 * Math.PI)
+			line(x1, y1, x2, y2);
+
+			// cockpit
 			stroke('gray');
 			var r = 4;
 			var x1 = x + r * Math.cos(canvasa / 180.0 * Math.PI);
@@ -122,7 +134,7 @@ st.p5 = {
 			var x2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI);
 			var y2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI)
 			circle(x1, y1, 2);
-		
+
 			// light blue center and outer radius
 			stroke(155, 155, 255);
 			circle(x, y, 2);
@@ -131,10 +143,10 @@ st.p5 = {
 			fill('red');
 			textFont(st.p5.font);
 			var t = "p" + i + " (" + Math.round(a) + ")";
-			text(t, x-20, y + 20);
+			text(t, x - 20, y + 20);
 
 			var t = "(" + Math.round(plane.x) + ", " + Math.round(plane.y) + ")";
-			text(t, x-20, y + 30);
+			text(t, x - 20, y + 30);
 		}
 	}
 };
