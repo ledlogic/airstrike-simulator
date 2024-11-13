@@ -41,7 +41,10 @@ st.planes = {
 			x: x, 
 			y: y,
 			a: a,
-			v: v
+			v: v,
+			target: null,
+			smokes: [],
+			removed: false
 		};
 		return plane;
 	}

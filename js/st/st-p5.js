@@ -5,6 +5,7 @@ function setup() {
 function draw() {
 	st.p5.updateTime();
 	st.p5.drawSky();
+	st.p5.drawSmoke();
 	st.p5.drawPlanes();
 }
 
@@ -18,7 +19,9 @@ st.p5 = {
 	time: { 
 		current: 0,
 		last: 0,
-		delta: 0
+		delta: 0,
+		cumDelta: 0,
+		scale: 250
 	},
 
 	real: {
@@ -93,6 +96,24 @@ st.p5 = {
 		line(x1, y1, x2, y2);
 	},
 
+	drawSmoke: function() {
+		var ratio = st.p5.real.ratio;
+		var planes = st.planes.planes;
+		for (var i = 0; i < planes.length; i++) {
+			var plane = planes[i];
+			var smokes = plane.smokes;
+			for (var j = 0; j < smokes.length; j++) {
+				var smoke = smokes[j];
+				var x = smoke.x / ratio;
+				var y = -smoke.y / ratio;
+				var a = smoke.a;
+				stroke(0,0,0,a);
+				fill(0,0,0,0);
+				circle(x, y, 2);
+			}
+		}
+	},
+
 	drawPlanes: function() {
 		var ratio = st.p5.real.ratio;
 		var planes = st.planes.planes;
@@ -145,7 +166,7 @@ st.p5 = {
 			line(x1, y1, x2, y2);
 
 			// cockpit
-			stroke('gray');
+			stroke('fuselageColor');
 			var r = 4;
 			var x1 = x + r * Math.cos(canvasa / 180.0 * Math.PI);
 			var y1 = y - r * Math.sin(canvasa / 180.0 * Math.PI);
@@ -158,7 +179,7 @@ st.p5 = {
 			circle(x, y, 2);
 			circle(x, y, 25);
 
-			fill('red');
+			fill(fuselageColor);
 			textFont(st.p5.font);
 			var t = "p" + i + " (" + Math.round(a) + ")";
 			text(t, x - 20, y + 20);
@@ -172,17 +193,43 @@ st.p5 = {
 		var current = millis();
 		st.p5.time.current = current;
 	
+		var smokeDelta = 500;
 		var last = st.p5.time.last;
+		var cnt = 0;
 		if (current) {
 			var delta = current - last;
-			st.p5.time.delta = delta;			
+			st.p5.time.delta = delta;
+			
+			// smokes			
+			st.p5.time.cumDelta += delta;		
+			if (st.p5.time.cumDelta > smokeDelta) {
+				st.p5.updateSmokes();
+				st.p5.time.cumDelta -= smokeDelta;
+			}
+			
+			st.p5.updateTargets();
+			
+			// planes
 			st.p5.updatePositions();
 		}
 		st.p5.time.last = current;
 	},
 	
+	updateTargets: function() {
+		var planes = st.planes.planes;
+		for (var i = 0; i < planes.length; i++) {
+			var plane = planes[i];
+			var target = plane.target;
+			
+			if (target == null || target.removed) {
+				// pick a new target]
+			}
+		}
+	},
+	
 	updatePositions: function() {
 		var planes = st.planes.planes;
+		var scale = st.p5.time.scale;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
 
@@ -193,13 +240,45 @@ st.p5 = {
 			var canvasa = 90.0 - a;
 			var mc = Math.cos(canvasa / 180.0 * Math.PI);
 			var ms = Math.sin(canvasa / 180.0 * Math.PI);
-			//st.log("a[" + a + "], canvasa[" + canvasa + "], mc[" + mc + ", ms[" + ms + "]");
 
-			x += mc * v * st.p5.time.delta / 500;
-			y += ms * v * st.p5.time.delta / 500;
+			x += mc * v * st.p5.time.delta / scale;
+			y += ms * v * st.p5.time.delta / scale;
 			
 			plane.x = x;
 			plane.y = y;
+		}
+	},
+	
+	updateSmokes: function() {
+		var smokeDelta = 10;
+		
+		var planes = st.planes.planes;
+		for (var i = 0; i < planes.length; i++) {
+			var plane = planes[i];
+			
+			// fade smoke
+			var smokes = plane.smokes;
+			var minJ = 0;
+			console.log(smokes.length);
+			for (var j = 0; j < smokes.length; j++) {
+				var smoke = smokes[j];
+				smoke.a = smoke.a - smokeDelta;
+				if (smoke.a <= 0) {
+					minJ = j;	
+				}
+			}
+			if (minJ > 0) {
+				plane.smokes = _.drop(smokes, minJ);
+			}
+			
+			var x = plane.x;
+			var y = plane.y;
+			var pt = {
+				x : x, 
+				y: y,
+				a: 180
+			};
+			plane.smokes.push(pt);
 		}
 	}
 	
