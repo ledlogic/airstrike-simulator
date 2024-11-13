@@ -259,7 +259,6 @@ st.p5 = {
 			// fade smoke
 			var smokes = plane.smokes;
 			var minJ = 0;
-			console.log(smokes.length);
 			for (var j = 0; j < smokes.length; j++) {
 				var smoke = smokes[j];
 				smoke.a = smoke.a - smokeDelta;
