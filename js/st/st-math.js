@@ -31,5 +31,11 @@ st.math = {
 		}
 		var ret = Math.ceil(tot / len);
 		return ret;
+	},
+	randomAngle: function() {
+		return Math.random() * 360.0;
+	},
+	randomBetween: function(low, high) {
+		return Math.random() * (high - low) + low;
 	}
 };
