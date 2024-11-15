@@ -3,10 +3,14 @@
 st.planes = {
 	data: {
 		"me-109": {
-			v: 154 // m/s
+			v: 154, // m/s
+			hp: 100,
+			d: 10
 		},
 		"po-2": {
-			v: 30 // m/s
+			v: 30, // m/s
+			hp: 20,
+			d: 5
 		}
 	},
 
@@ -33,12 +37,14 @@ st.planes = {
 				var a = st.math.randomBetween(180, 360);
 			}
 			var v = st.planes.data[type].v;
-			var plane = st.planes.createPlane(team, type, x, y, a, v);
+			var hp = st.planes.data[type].hp;
+			var d = st.planes.data[type].d;
+			var plane = st.planes.createPlane(team, type, x, y, a, v, hp, d);
 			st.planes.planes.push(plane);
 		}
 	},
 
-	createPlane: function(team, type, x, y, a, v) {
+	createPlane: function(team, type, x, y, a, v, hp, d) {
 		var plane = {
 			team: team,
 			type: type,
@@ -46,9 +52,13 @@ st.planes = {
 			y: y,
 			a: a,
 			v: v,
-			target: null,
+			minTargetDist: 1000,
+			target: -1,
+			targetDist: 1e10,
 			smokes: [],
-			removed: false
+			removed: false,
+			hp: hp,
+			d: d
 		};
 		return plane;
 	},
@@ -63,7 +73,7 @@ st.planes = {
 			var plane = planes[i];
 			var target = plane.target;
 
-			if (target == null || target.removed) {
+			if (target == -1 || planes[target].hp == 0) {
 				st.planes.updateTarget(i);
 			}
 		}

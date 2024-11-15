@@ -119,73 +119,81 @@ st.p5 = {
 		var planes = st.planes.planes;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
+			if (plane.hp > 0) {
 
-			var x = plane.x / ratio;
-			var y = -plane.y / ratio;
-			var a = plane.a;
-			var canvasa = 90.0 - a;
-
-			// fuselage
-			var fuselageColor = 'black';
-			if (plane.team == 'german') {
-				fuselageColor = 'gray';
+				var x = plane.x / ratio;
+				var y = -plane.y / ratio;
+				var a = plane.a;
+				var canvasa = 90.0 - a;
+	
+				// fuselage
+				var fuselageColor = 'black';
+				if (plane.team == 'german') {
+					fuselageColor = 'gray';
+				}
+				if (plane.team == 'soviet') {
+					fuselageColor = 'maroon';
+				}
+				
+				stroke(fuselageColor);
+				strokeWeight(3);
+				fill(0, 0, 0, 0);
+				var r = 10;
+				var x1 = x + 0.75 * r * Math.cos(canvasa / 180.0 * Math.PI);
+				var y1 = y - 0.75 * r * Math.sin(canvasa / 180.0 * Math.PI);
+				var fx2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI);
+				var fy2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI)
+				line(x1, y1, fx2, fy2);
+	
+				// wing
+				var winga = canvasa + 90.0;
+				var r = 10.0;
+				var x1 = x + r * Math.cos(winga / 180.0 * Math.PI);
+				var y1 = y - r * Math.sin(winga / 180.0 * Math.PI);
+				var x2 = x + r * Math.cos((winga + 180.0) / 180.0 * Math.PI);
+				var y2 = y - r * Math.sin((winga + 180.0) / 180.0 * Math.PI)
+				line(x1, y1, x2, y2);
+	
+				// tail
+				strokeWeight(2.5);
+				var r = 3;
+				var rr = 0.9;
+				var tx2 = ((1-rr) * x + rr*fx2);
+				var ty2 = ((1-rr) * y + rr*fy2);
+				var x1 = tx2 + r * Math.cos(winga / 180.0 * Math.PI);
+				var y1 = ty2 - r * Math.sin(winga / 180.0 * Math.PI);
+				var x2 = tx2 + r * Math.cos((winga + 180.0) / 180.0 * Math.PI);
+				var y2 = ty2 - r * Math.sin((winga + 180.0) / 180.0 * Math.PI)
+				line(x1, y1, x2, y2);
+	
+				// cockpit
+				stroke('fuselageColor');
+				var r = 4;
+				var x1 = x + r * Math.cos(canvasa / 180.0 * Math.PI);
+				var y1 = y - r * Math.sin(canvasa / 180.0 * Math.PI);
+				var x2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI);
+				var y2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI)
+				circle(x1, y1, 2);
+	
+				// light blue center and outer radius
+				stroke(155, 155, 255);
+				circle(x, y, 2);
+				circle(x, y, 25);
+	
+				fill(fuselageColor);
+				textFont(st.p5.font);
+				var t = "p" + i + " (" + Math.round(a) + ")";
+				text(t, x - 20, y + 20);
+	
+				var t = "(" + Math.round(plane.x) + ", " + Math.round(plane.y) + ")";
+				text(t, x - 20, y + 30);
+	
+				var t = "(" + Math.round(plane.targetDist) + ")";
+				text(t, x - 20, y + 40);
+	
+				var t = "(" + Math.round(plane.hp) + ")";
+				text(t, x - 20, y + 50);
 			}
-			if (plane.team == 'soviet') {
-				fuselageColor = 'maroon';
-			}
-			
-			stroke(fuselageColor);
-			strokeWeight(3);
-			fill(0, 0, 0, 0);
-			var r = 10;
-			var x1 = x + 0.75 * r * Math.cos(canvasa / 180.0 * Math.PI);
-			var y1 = y - 0.75 * r * Math.sin(canvasa / 180.0 * Math.PI);
-			var fx2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI);
-			var fy2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI)
-			line(x1, y1, fx2, fy2);
-
-			// wing
-			var winga = canvasa + 90.0;
-			var r = 10.0;
-			var x1 = x + r * Math.cos(winga / 180.0 * Math.PI);
-			var y1 = y - r * Math.sin(winga / 180.0 * Math.PI);
-			var x2 = x + r * Math.cos((winga + 180.0) / 180.0 * Math.PI);
-			var y2 = y - r * Math.sin((winga + 180.0) / 180.0 * Math.PI)
-			line(x1, y1, x2, y2);
-
-			// tail
-			strokeWeight(2.5);
-			var r = 3;
-			var rr = 0.9;
-			var tx2 = ((1-rr) * x + rr*fx2);
-			var ty2 = ((1-rr) * y + rr*fy2);
-			var x1 = tx2 + r * Math.cos(winga / 180.0 * Math.PI);
-			var y1 = ty2 - r * Math.sin(winga / 180.0 * Math.PI);
-			var x2 = tx2 + r * Math.cos((winga + 180.0) / 180.0 * Math.PI);
-			var y2 = ty2 - r * Math.sin((winga + 180.0) / 180.0 * Math.PI)
-			line(x1, y1, x2, y2);
-
-			// cockpit
-			stroke('fuselageColor');
-			var r = 4;
-			var x1 = x + r * Math.cos(canvasa / 180.0 * Math.PI);
-			var y1 = y - r * Math.sin(canvasa / 180.0 * Math.PI);
-			var x2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI);
-			var y2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI)
-			circle(x1, y1, 2);
-
-			// light blue center and outer radius
-			stroke(155, 155, 255);
-			circle(x, y, 2);
-			circle(x, y, 25);
-
-			fill(fuselageColor);
-			textFont(st.p5.font);
-			var t = "p" + i + " (" + Math.round(a) + ")";
-			text(t, x - 20, y + 20);
-
-			var t = "(" + Math.round(plane.x) + ", " + Math.round(plane.y) + ")";
-			text(t, x - 20, y + 30);
 		}
 	},
 	
@@ -220,21 +228,32 @@ st.p5 = {
 		var scale = st.p5.time.scale;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
-			if (plane.target > -1 && i != plane.target) {
-				var targetA = st.planes.calcIndexAngle(i, plane.target);
-				var planeA = plane.a;
-				var dA = (targetA - planeA);
-				if (dA > 180) {
-					dA = 180 - dA;
+			if (plane.hp > 0) {
+				if (plane.target > -1 && i != plane.target) {
+					var dist = st.planes.calcIndexDistance(i, plane.target);
+					plane.targetDist = dist;
+					if (dist < plane.minTargetDist) {
+						var targetPlane = planes[plane.target];
+						var hp = targetPlane.hp - plane.d;
+						targetPlane.hp = Math.max(hp, 0);
+					}				
+					if (dist > plane.minTargetDist) {
+						var targetA = st.planes.calcIndexAngle(i, plane.target);
+						var planeA = plane.a;
+						var dA = (targetA - planeA);
+						if (dA > 180) {
+							dA = 180 - dA;
+						}
+						var deltaA = 0;
+						if (dA > 0) {
+							deltaA = Math.min(dA, 3);
+						}
+						if (dA < 0) {
+							deltaA = Math.max(dA, -3);
+						}
+						plane.a += deltaA;
+					}
 				}
-				var deltaA = 0;
-				if (dA > 0) {
-					deltaA = Math.min(dA, 3);
-				}
-				if (dA < 0) {
-					deltaA = Math.max(dA, -3);
-				}
-				plane.a += deltaA;
 			}
 		}
 	},
@@ -245,22 +264,24 @@ st.p5 = {
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
 
-			var x = plane.x;
-			var y = plane.y;
-			var a = plane.a;
-			var v = plane.v;
-			
-			// convert from geographic
-			var canvasa = 90.0 - a;
-
-			var mc = Math.cos(canvasa / 180.0 * Math.PI);
-			var ms = Math.sin(canvasa / 180.0 * Math.PI);
-
-			x += mc * v * st.p5.time.delta / scale;
-			y += ms * v * st.p5.time.delta / scale;
-			
-			plane.x = x;
-			plane.y = y;
+			if (plane.hp > 0) {
+				var x = plane.x;
+				var y = plane.y;
+				var a = plane.a;
+				var v = plane.v;
+				
+				// convert from geographic
+				var canvasa = 90.0 - a;
+	
+				var mc = Math.cos(canvasa / 180.0 * Math.PI);
+				var ms = Math.sin(canvasa / 180.0 * Math.PI);
+	
+				x += mc * v * st.p5.time.delta / scale;
+				y += ms * v * st.p5.time.delta / scale;
+				
+				plane.x = x;
+				plane.y = y;
+			}
 		}
 	},
 	
@@ -270,7 +291,7 @@ st.p5 = {
 		var planes = st.planes.planes;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
-			
+
 			// fade smoke
 			var smokes = plane.smokes;
 			var minJ = 0;
@@ -284,15 +305,17 @@ st.p5 = {
 			if (minJ > 0) {
 				plane.smokes = _.drop(smokes, minJ);
 			}
-			
-			var x = plane.x;
-			var y = plane.y;
-			var pt = {
-				x : x, 
-				y: y,
-				a: 180
-			};
-			plane.smokes.push(pt);
+
+			if (plane.hp > 0) {
+				var x = plane.x;
+				var y = plane.y;
+				var pt = {
+					x : x, 
+					y: y,
+					a: 180
+				};
+				plane.smokes.push(pt);
+			}
 		}
 	}
 	
