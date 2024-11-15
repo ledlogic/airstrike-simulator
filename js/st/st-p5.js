@@ -225,7 +225,6 @@ st.p5 = {
 	
 	updateAngles: function(delta) {
 		var planes = st.planes.planes;
-		var scale = st.p5.time.scale;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
 			if (plane.hp > 0) {
@@ -234,28 +233,35 @@ st.p5 = {
 					plane.targetDist = dist;
 					if (dist < plane.minTargetDist) {
 						var targetPlane = planes[plane.target];
-						var hp = targetPlane.hp - plane.d;
+						var hp = targetPlane.hp - Math.random() * plane.d;
 						targetPlane.hp = Math.max(hp, 0);
 					}				
 					if (dist > plane.minTargetDist) {
 						var targetA = st.planes.calcIndexAngle(i, plane.target);
-						var planeA = plane.a;
-						var dA = (targetA - planeA);
-						if (dA > 180) {
-							dA = 180 - dA;
-						}
-						var deltaA = 0;
-						if (dA > 0) {
-							deltaA = Math.min(dA, 3);
-						}
-						if (dA < 0) {
-							deltaA = Math.max(dA, -3);
-						}
-						plane.a += deltaA;
+						st.p5.updatePlane(plane, targetA);
 					}
+				} else {
+					var targetA = plane.homeAngle;
+					st.p5.updatePlane(plane, targetA);
 				}
 			}
 		}
+	},
+	
+	updatePlane: function(plane, targetA) {
+		var planeA = plane.a;
+		var dA = (targetA - planeA);
+		if (dA > 180) {
+			dA = 180 - dA;
+		}
+		var deltaA = 0;
+		if (dA > 0) {
+			deltaA = Math.min(dA, 3);
+		}
+		if (dA < 0) {
+			deltaA = Math.max(dA, -3);
+		}
+		plane.a += deltaA;
 	},
 	
 	updatePositions: function(delta) {

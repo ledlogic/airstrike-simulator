@@ -29,28 +29,30 @@ st.planes = {
 				var x = st.math.randomBetween(-full, (-1 + spread) * full);
 				var y = st.math.randomBetween(-spread * full, spread * full);
 				var a = st.math.randomBetween(0, 180);
-
+				var homeAngle = 280;
 			}
 			if (team == 'soviet') {
 				var x = st.math.randomBetween(spread * full, full);
 				var y = st.math.randomBetween(-spread * full, spread * full);
 				var a = st.math.randomBetween(180, 360);
+				var homeAngle = 80;
 			}
 			var v = st.planes.data[type].v;
 			var hp = st.planes.data[type].hp;
 			var d = st.planes.data[type].d;
-			var plane = st.planes.createPlane(team, type, x, y, a, v, hp, d);
+			var plane = st.planes.createPlane(team, type, x, y, a, homeAngle, v, hp, d);
 			st.planes.planes.push(plane);
 		}
 	},
 
-	createPlane: function(team, type, x, y, a, v, hp, d) {
+	createPlane: function(team, type, x, y, a, homeAngle, v, hp, d) {
 		var plane = {
 			team: team,
 			type: type,
 			x: x,
 			y: y,
 			a: a,
+			homeAngle: homeAngle,
 			v: v,
 			minTargetDist: 1000,
 			target: -1,
@@ -72,8 +74,13 @@ st.planes = {
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
 			var target = plane.target;
+			if (target > -1) {
+				if (planes[target].hp <= 0) {
+					target = -1;	
+				}
+			}
 
-			if (target == -1 || planes[target].hp == 0) {
+			if (target == -1) {
 				st.planes.updateTarget(i);
 			}
 		}
@@ -107,7 +114,8 @@ st.planes = {
 		var planes = st.planes.planes;
 		var d = [];
 		for (var i = 0; i < planes.length; i++) {
-			if ((i == index) || st.planes.sameTeam(index, i)) {
+			var targetPlane = planes[i];
+			if ((i == index) || st.planes.sameTeam(index, i) || targetPlane.hp <= 0) {
 				d[i] = 1e20;
 			} else {
 				d[i] = st.planes.calcIndexDistance(index, i);
