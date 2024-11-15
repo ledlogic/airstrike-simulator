@@ -207,27 +207,39 @@ st.p5 = {
 				st.p5.time.cumDelta -= smokeDelta;
 			}
 			
-			st.p5.updateTargets();
-			
 			// planes
-			st.p5.updatePositions();
+			st.planes.updateTargets();
+			st.p5.updateAngles(delta);
+			st.p5.updatePositions(delta);
 		}
 		st.p5.time.last = current;
 	},
 	
-	updateTargets: function() {
+	updateAngles: function(delta) {
 		var planes = st.planes.planes;
+		var scale = st.p5.time.scale;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
-			var target = plane.target;
-			
-			if (target == null || target.removed) {
-				// pick a new target]
+			if (plane.target > -1 && i != plane.target) {
+				var targetA = st.planes.calcIndexAngle(i, plane.target);
+				var planeA = plane.a;
+				var dA = (targetA - planeA);
+				if (dA > 180) {
+					dA = 180 - dA;
+				}
+				var deltaA = 0;
+				if (dA > 0) {
+					deltaA = Math.min(dA, 3);
+				}
+				if (dA < 0) {
+					deltaA = Math.max(dA, -3);
+				}
+				plane.a += deltaA;
 			}
 		}
 	},
 	
-	updatePositions: function() {
+	updatePositions: function(delta) {
 		var planes = st.planes.planes;
 		var scale = st.p5.time.scale;
 		for (var i = 0; i < planes.length; i++) {
@@ -237,7 +249,10 @@ st.p5 = {
 			var y = plane.y;
 			var a = plane.a;
 			var v = plane.v;
+			
+			// convert from geographic
 			var canvasa = 90.0 - a;
+
 			var mc = Math.cos(canvasa / 180.0 * Math.PI);
 			var ms = Math.sin(canvasa / 180.0 * Math.PI);
 
