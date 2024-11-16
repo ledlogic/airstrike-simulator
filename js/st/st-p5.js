@@ -182,17 +182,20 @@ st.p5 = {
 	
 				fill(fuselageColor);
 				textFont(st.p5.font);
-				var t = "p" + i + " (" + Math.round(a) + ")";
+				var t = "p" + i;
 				text(t, x - 20, y + 20);
-	
-				var t = "(" + Math.round(plane.x) + ", " + Math.round(plane.y) + ")";
+
+ 				var t = " (" + Math.round(plane.x) + "m, " + Math.round(plane.y) + "m, " + Math.round(a) + "°)";
 				text(t, x - 20, y + 30);
 	
-				var t = "(" + Math.round(plane.targetDist) + ")";
+				var t = " hp(" + Math.round(plane.hp) + ")";
 				text(t, x - 20, y + 40);
+
+				if (plane.target != -1) {
+					var t = "-> p" + plane.target + ": " + Math.round(plane.targetDist) + "m";
+					text(t, x - 20, y + 50);
+				}
 	
-				var t = "(" + Math.round(plane.hp) + ")";
-				text(t, x - 20, y + 50);
 			}
 		}
 	},
@@ -228,7 +231,7 @@ st.p5 = {
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
 			if (plane.hp > 0) {
-				if (plane.target > -1 && i != plane.target) {
+				if (plane.target > -1 && i != plane.target && planes[plane.target].hp > 0) {
 					var dist = st.planes.calcIndexDistance(i, plane.target);
 					plane.targetDist = dist;
 					if (dist < plane.minTargetDist) {
@@ -262,6 +265,13 @@ st.p5 = {
 			deltaA = Math.max(dA, -3);
 		}
 		plane.a += deltaA;
+		
+		while (plane.a > 360.0) {
+			plane.a -= 360.0;
+		}
+		while (plane.a < 0.0) {
+			plane.a += 360.0;
+		}		
 	},
 	
 	updatePositions: function(delta) {
