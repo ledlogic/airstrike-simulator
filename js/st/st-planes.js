@@ -1,5 +1,8 @@
 /* st-planes.js */
 
+const MAX_TO_CRUISE = 2.0 / 3.0;
+const KPH_TO_MPS = 1000 / 3600;
+
 st.planes = {
 	data: {
 		"me-109": {
@@ -8,7 +11,7 @@ st.planes = {
 			d: 10
 		},
 		"po-2": {
-			v: 30, // m/s
+			v: MAX_TO_CRUISE * 152 * KPH_TO_MPS, // m/s
 			hp: 20,
 			d: 5
 		}
