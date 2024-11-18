@@ -1,26 +1,32 @@
 /* st-planes.js */
 
 const MAX_TO_CRUISE = 2.0 / 3.0;
-const KPH_TO_MPS = 1000 / 3600;
+const KPH_TO_MPM = 1000 / 60 / 10;
 
 st.planes = {
 	data: {
-		"me-109": {
-			v: 154, // m/s
-			hp: 100,
-			d: 10
+		"bf-109": {
+			v: MAX_TO_CRUISE * 588 * KPH_TO_MPM,
+			hull: 3,
+			structure: 3,
+			armour: 6,
+			d: 6,
+			ap: "S"
 		},
 		"po-2": {
-			v: MAX_TO_CRUISE * 152 * KPH_TO_MPS, // m/s
-			hp: 20,
-			d: 5
+			v: MAX_TO_CRUISE * 152 * KPH_TO_MPM,
+			hull: 1,
+			structure: 1,
+			armour: 4,
+			d: 3,
+			ap: "S"
 		}
 	},
 
 	planes: [],
 
 	init: function() {
-		st.planes.createPlanes("german", "me-109", 3);
+		st.planes.createPlanes("german", "bf-109", 1);
 		st.planes.createPlanes("soviet", "po-2", 12);
 	},
 
@@ -41,14 +47,17 @@ st.planes = {
 				var homeAngle = 80;
 			}
 			var v = st.planes.data[type].v;
-			var hp = st.planes.data[type].hp;
+			var hull = st.planes.data[type].hull;
+			var structure = st.planes.data[type].structure;
+			var armour = st.planes.data[type].armour;
 			var d = st.planes.data[type].d;
-			var plane = st.planes.createPlane(team, type, x, y, a, homeAngle, v, hp, d);
+			var ap = st.planes.data[type].armour;
+			var plane = st.planes.createPlane(team, type, x, y, a, homeAngle, v, hull, structure, armour, d, ap);
 			st.planes.planes.push(plane);
 		}
 	},
 
-	createPlane: function(team, type, x, y, a, homeAngle, v, hp, d) {
+	createPlane: function(team, type, x, y, a, homeAngle, v, hull, structure, armour, d, ap) {
 		var plane = {
 			team: team,
 			type: type,
@@ -62,8 +71,11 @@ st.planes = {
 			targetDist: 1e10,
 			smokes: [],
 			removed: false,
-			hp: hp,
-			d: d
+			hull: hull,
+			structure: structure,
+			armour: armour,
+			d: d,
+			ap: ap
 		};
 		return plane;
 	},
@@ -78,7 +90,7 @@ st.planes = {
 			var plane = planes[i];
 			var target = plane.target;
 			if (target > -1) {
-				if (planes[target].hp <= 0) {
+				if (planes[target].structure <= 0) {
 					target = -1;	
 				}
 			}
@@ -118,7 +130,7 @@ st.planes = {
 		var d = [];
 		for (var i = 0; i < planes.length; i++) {
 			var targetPlane = planes[i];
-			if ((i == index) || st.planes.sameTeam(index, i) || targetPlane.hp <= 0) {
+			if ((i == index) || st.planes.sameTeam(index, i) || targetPlane.structure <= 0) {
 				d[i] = 1e20;
 			} else {
 				d[i] = st.planes.calcIndexDistance(index, i);
@@ -182,6 +194,24 @@ st.planes = {
 		}
 
 		return theta;
+	},
+	
+	shoot: function(plane) {
+		var planes = st.planes.planes;
+		var targetPlane = planes[plane.target];
+		// TODO: see if hit!
+		var effect = 0;
+		var d = st.math.die(plane.d, 6, effect);
+		d = Math.max(0, d-targetPlane.armour);
+		if (d>0 && targetPlane.hull > 0) {
+			var dHull = Math.min(d, targetPlane.hull);
+			targetPlane.hull = targetPlane.hull - dHull;
+			d -= dHull;
+		}
+		if (d>0 && targetPlane.structure > 0) {
+			var dStructure = Math.min(d, targetPlane.structure);
+			targetPlane.structure = targetPlane.structure - dStructure;
+		}
 	}
 	
 };

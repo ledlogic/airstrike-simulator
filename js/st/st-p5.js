@@ -119,7 +119,7 @@ st.p5 = {
 		var planes = st.planes.planes;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
-			if (plane.hp > 0) {
+			if (plane.structure > 0) {
 
 				var x = plane.x / ratio;
 				var y = -plane.y / ratio;
@@ -188,7 +188,7 @@ st.p5 = {
  				var t = " (" + Math.round(plane.x) + "m, " + Math.round(plane.y) + "m, " + Math.round(a) + "°)";
 				text(t, x - 20, y + 30);
 	
-				var t = " hp(" + Math.round(plane.hp) + ")";
+				var t = " hull: " + Math.round(plane.hull) + ", structure: " + Math.round(plane.structure);
 				text(t, x - 20, y + 40);
 
 				if (plane.target != -1) {
@@ -206,7 +206,6 @@ st.p5 = {
 	
 		var smokeDelta = 500;
 		var last = st.p5.time.last;
-		var cnt = 0;
 		if (current) {
 			var delta = current - last;
 			st.p5.time.delta = delta;
@@ -230,14 +229,12 @@ st.p5 = {
 		var planes = st.planes.planes;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
-			if (plane.hp > 0) {
-				if (plane.target > -1 && i != plane.target && planes[plane.target].hp > 0) {
+			if (plane.structure > 0) {
+				if (plane.target > -1 && i != plane.target && planes[plane.target].structure > 0) {
 					var dist = st.planes.calcIndexDistance(i, plane.target);
 					plane.targetDist = dist;
 					if (dist < plane.minTargetDist) {
-						var targetPlane = planes[plane.target];
-						var hp = targetPlane.hp - Math.random() * plane.d;
-						targetPlane.hp = Math.max(hp, 0);
+						st.planes.shoot(plane);
 					}				
 					if (dist > plane.minTargetDist) {
 						var targetA = st.planes.calcIndexAngle(i, plane.target);
@@ -280,7 +277,7 @@ st.p5 = {
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
 
-			if (plane.hp > 0) {
+			if (plane.structure > 0) {
 				var x = plane.x;
 				var y = plane.y;
 				var a = plane.a;
@@ -322,7 +319,7 @@ st.p5 = {
 				plane.smokes = _.drop(smokes, minJ);
 			}
 
-			if (plane.hp > 0) {
+			if (plane.structure > 0) {
 				var x = plane.x;
 				var y = plane.y;
 				var pt = {
