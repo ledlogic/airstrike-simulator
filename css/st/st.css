@@ -4,8 +4,11 @@
 	font-family: 'Courier New', serif;
 }
 body {
-  line-height: 1.38;
-  margin: 1em;
+	border: 1px solid black;
+	line-height: 1.38;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
 }
 h1, h2, h3, h4, h5, h6 {
 	font-family: 'Courier New', serif;
@@ -19,6 +22,35 @@ h1.page-title {
 }
 h4 {
 	font-size: 0.8em;
+}
+.st-page {
+	border: 1px solid purple;
+	margin: 0;
+	padding: 0;
+	position: relative;	
+}
+.st-page-bk {
+	border: 1px solid red;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+}
+.st-canvas {
+	border: 1px solid orange;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+}
+.st-page-img {
+	opacity: 80%;
+	height: 100%;
+	width: 100%;
 }
 .st-footer {
 	border-top: 1px solid #ccc;

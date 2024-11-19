@@ -54,7 +54,7 @@ st.planes = {
 					return;
 			}
 		}
-		st.planes.createPlanes("german", "bf-109", 2);
+		st.planes.createPlanes("german", "bf-109", 3);
 		st.planes.createPlanes("soviet", "po-2", 12);
 	},
 
@@ -102,7 +102,6 @@ st.planes = {
 			a: a,
 			homeAngle: homeAngle,
 			v: v,
-			minTargetDist: 1000,
 			target: -1,
 			targetA: -1,
 			targetDist: 1e10,
@@ -271,6 +270,10 @@ st.planes = {
 				}
 			}
 		});
+	},
+	
+	minDistTarget: function(plane) {
+		return 35000;
 	}
 	
 };

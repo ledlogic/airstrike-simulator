@@ -1,21 +1,8 @@
 /* st-p5.js */
 
-function setup() {
-	st.p5.init();
-}
-
-function draw() {
-	st.p5.updateTime();
-	st.p5.drawSky();
-	st.p5.drawSmoke();
-	st.p5.drawPlanes();
-}
-
-function preload() {
-	st.p5.font = loadFont('./font/inconsolata.otf');
-}
-
 st.p5 = {
+	backgroundImg: null,
+	font: null, 
 	ratio: 500,
 	
 	time: { 
@@ -33,8 +20,8 @@ st.p5 = {
 	},
 
 	init: function() {
-		var w = window.innerWidth - 32;
-		var h = window.innerHeight - 140;
+		var w = window.innerWidth;
+		var h = window.innerHeight;
 
 		st.p5.real.ratio = st.p5.real.full / h;
 
@@ -45,13 +32,26 @@ st.p5 = {
 
 		st.planes.init();
 	},
-
-	drawSky: function() {
+	
+	drawBackground: function() {
 		var ratio = st.p5.real.ratio;
-		
-		background(255);
 
-		stroke(155, 155, 255);
+		//background(255);
+		
+		clear();
+		
+		if (0) {
+			image(st.p5.backgroundImg,
+				-st.p5.real.full/ ratio, -st.p5.real.full/ ratio,
+				st.p5.real.full/ ratio * 2.0, st.p5.real.full/ ratio * 2.0);
+		}
+	},
+
+	drawGrid: function() {
+		var ratio = st.p5.real.ratio;
+
+		fill(0, 0, 0);
+		stroke(0, 0, 0);
 		strokeWeight(0.5);
 		
 		for (var realx = -st.p5.real.full; realx <= st.p5.real.full; realx += st.p5.real.minor) {
@@ -77,6 +77,9 @@ st.p5 = {
 			var y1 = -st.p5.real.full / ratio;
 			var y2 = st.p5.real.full / ratio;
 			line(x1, y1, x2, y2);
+			
+			var t = Math.round(realx);
+			text(t, x1+4, 12);
 		}
 
 		for (var realy = -st.p5.real.full; realy <= st.p5.real.full; realy += st.p5.real.major) {
@@ -85,6 +88,9 @@ st.p5 = {
 			var y1 = realy / ratio;
 			var y2 = y1;
 			line(x1, y1, x2, y2);
+
+			var t = Math.round(realy);
+			text(t, 12, y1+4);
 		}
 
 		strokeWeight(2);
@@ -134,7 +140,7 @@ st.p5 = {
 				// fuselage
 				var fuselageColor = 'black';
 				if (plane.team == 'german') {
-					fuselageColor = 'gray';
+					fuselageColor = 'navy';
 				}
 				if (plane.team == 'soviet') {
 					fuselageColor = 'maroon';
@@ -172,18 +178,18 @@ st.p5 = {
 				line(x1, y1, x2, y2);
 	
 				// cockpit
-				stroke('fuselageColor');
-				var r = 4;
-				var x1 = x + r * Math.cos(canvasa / 180.0 * Math.PI);
-				var y1 = y - r * Math.sin(canvasa / 180.0 * Math.PI);
-				var x2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI);
-				var y2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI)
-				circle(x1, y1, 2);
+				//stroke('fuselageColor');
+				//var r = 4;
+				//var x1 = x + r * Math.cos(canvasa / 180.0 * Math.PI);
+				//var y1 = y - r * Math.sin(canvasa / 180.0 * Math.PI);
+				//var x2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI);
+				//var y2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI)
+				//circle(x1, y1, 2);
 	
 				// light blue center and outer radius
-				stroke(155, 155, 255);
-				circle(x, y, 2);
-				circle(x, y, 25);
+				//stroke(155, 155, 255);
+				//circle(x, y, 2);
+				//circle(x, y, 25);
 	
 				fill(fuselageColor);
 				textFont(st.p5.font);
@@ -238,14 +244,12 @@ st.p5 = {
 				if (plane.target > -1 && i != plane.target && planes[plane.target].structure > 0) {
 					var dist = st.planes.calcIndexDistance(i, plane.target) * st.p5.time.delta;
 					plane.targetDist = dist;
-					if (dist < plane.minTargetDist) {
+					if (dist < st.planes.minDistTarget(plane)) {
 						st.planes.shoot(plane);
-					}				
-					if (dist > plane.minTargetDist) {
-						var targetA = st.planes.calcIndexAngle(i, plane.target);
-						plane.targetA = targetA;
-						st.p5.updatePlane(plane, targetA);
 					}
+					var targetA = st.planes.calcIndexAngle(i, plane.target);
+					plane.targetA = targetA;
+					st.p5.updatePlane(plane, targetA);
 				} else {
 					var targetA = plane.homeAngle;
 					st.p5.updatePlane(plane, targetA);
@@ -339,3 +343,22 @@ st.p5 = {
 	}
 	
 };
+
+/* p5 methods */
+
+function setup() {
+	st.p5.init();
+}
+
+function draw() {
+	st.p5.updateTime();
+	st.p5.drawBackground();
+	st.p5.drawGrid();
+	st.p5.drawSmoke();
+	st.p5.drawPlanes();
+}
+
+function preload() {
+	st.p5.font = loadFont('./font/inconsolata.otf');
+	st.p5.backgroundImg = loadImage('img/pripyat-river.jpg');
+}
