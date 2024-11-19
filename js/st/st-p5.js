@@ -215,7 +215,7 @@ st.p5 = {
 		var current = millis();
 		st.p5.time.current = current;
 	
-		var smokeDelta = 500;
+		var smokeDelta = 75;
 		var last = st.p5.time.last;
 		if (current) {
 			var delta = current - last;
