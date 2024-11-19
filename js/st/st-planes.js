@@ -10,27 +10,55 @@ st.planes = {
 			hull: 3,
 			structure: 3,
 			armour: 6,
-			d: 6,
-			ap: "S"
+			weapons: [
+				{
+					"arc": "f",
+					"d": 6,
+					"ap": "S"
+				}
+			]
 		},
 		"po-2": {
 			v: MAX_TO_CRUISE * 152 * KPH_TO_MPM,
 			hull: 1,
 			structure: 1,
 			armour: 4,
-			d: 3,
-			ap: "S"
+			weapons: [
+				{
+					"arc": "t",
+					"d": 3,
+					"ap": "S"
+				}
+			]
 		}
 	},
 
 	planes: [],
 
 	init: function() {
-		st.planes.createPlanes("german", "bf-109", 1);
+		var s = window.location.search;
+		if (s) {
+			var url = $.url();
+			var simulation = url.param('simulation');
+			switch (simulation) {
+				case "angle":
+					var angle = parseFloat(url.param('angle'),0);
+					angle = 90 - angle;
+					var r = 5000;
+					var x1 = Math.cos(angle / 180 * Math.PI) * r;
+					var y1 = Math.sin(angle / 180 * Math.PI) * r;
+					var x2 = Math.cos((angle + 180) / 180 * Math.PI) * r;
+					var y2 = Math.sin((angle + 180) / 180 * Math.PI) * r;
+					st.planes.createPlanes("soviet", "po-2", 1, {x: x1, y: y1});
+					st.planes.createPlanes("german", "bf-109", 1, {x: x2, y: y2});
+					return;
+			}
+		}
+		st.planes.createPlanes("german", "bf-109", 2);
 		st.planes.createPlanes("soviet", "po-2", 12);
 	},
 
-	createPlanes: function(team, type, qty) {
+	createPlanes: function(team, type, qty, opts) {
 		var full = st.p5.real.full;
 		var spread = 0.5;
 		for (var i = 0; i < qty; i++) {
@@ -45,19 +73,27 @@ st.planes = {
 				var y = st.math.randomBetween(-spread * full, spread * full);
 				var a = st.math.randomBetween(180, 360);
 				var homeAngle = 80;
+			}			
+			if (opts != null) {
+				if (opts.x != null) {
+					x = opts.x;
+				}
+				if (opts.y != null) {
+					y = opts.y;
+				}
 			}
+			
 			var v = st.planes.data[type].v;
 			var hull = st.planes.data[type].hull;
 			var structure = st.planes.data[type].structure;
 			var armour = st.planes.data[type].armour;
-			var d = st.planes.data[type].d;
-			var ap = st.planes.data[type].armour;
-			var plane = st.planes.createPlane(team, type, x, y, a, homeAngle, v, hull, structure, armour, d, ap);
+			var weapons = st.planes.data[type].weapons;
+			var plane = st.planes.createPlane(team, type, x, y, a, homeAngle, v, hull, structure, armour, weapons);
 			st.planes.planes.push(plane);
 		}
 	},
 
-	createPlane: function(team, type, x, y, a, homeAngle, v, hull, structure, armour, d, ap) {
+	createPlane: function(team, type, x, y, a, homeAngle, v, hull, structure, armour, weapons) {
 		var plane = {
 			team: team,
 			type: type,
@@ -68,14 +104,14 @@ st.planes = {
 			v: v,
 			minTargetDist: 1000,
 			target: -1,
+			targetA: -1,
 			targetDist: 1e10,
 			smokes: [],
-			removed: false,
 			hull: hull,
 			structure: structure,
 			armour: armour,
-			d: d,
-			ap: ap
+			weapons: weapons,
+			shootDelayed: 0
 		};
 		return plane;
 	},
@@ -89,14 +125,20 @@ st.planes = {
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
 			var target = plane.target;
+			var lastTarget = -1;
+
 			if (target > -1) {
 				if (planes[target].structure <= 0) {
-					target = -1;	
+					plane.target = -1;	
+				} else if (plane.shootDelayed > 5) {
+					lastTarget = target;	
+					plane.target = -1;
+					plane.shootDelayed = 0;
 				}
 			}
 
-			if (target == -1) {
-				st.planes.updateTarget(i);
+			if (plane.target == -1) {
+				st.planes.updateTarget(i, lastTarget);
 			}
 		}
 	},
@@ -104,17 +146,20 @@ st.planes = {
 	/**
 	 * Update the target for plane index
 	 **/
-	updateTarget: function(index) {
+	updateTarget: function(index, lastTarget) {
 		var planes = st.planes.planes;
 		var indexPlane = planes[index];
-		var distArr = st.planes.getTargetDistances(index);
+		var distArr = st.planes.getTargetDistances(index, lastTarget);
 		var minDistIndex = st.planes.minArrDistance(distArr);
 		indexPlane.target = minDistIndex;
+		if (lastTarget != -1) {
+			console.log([lastTarget,minDistIndex]);
+		}
 	},
 
 	minArrDistance: function(distArr) {
 		var minIndex = -1;
-		var minDist = 1e9;
+		var minDist = 1e20;
 		for (var i = 0; i < distArr.length; i++) {
 			var dist = distArr[i];
 			if (dist < minDist) {
@@ -125,13 +170,17 @@ st.planes = {
 		return minIndex;
 	},
 
-	getTargetDistances: function(index) {
+	getTargetDistances: function(index, lastTarget) {
 		var planes = st.planes.planes;
 		var d = [];
 		for (var i = 0; i < planes.length; i++) {
 			var targetPlane = planes[i];
-			if ((i == index) || st.planes.sameTeam(index, i) || targetPlane.structure <= 0) {
-				d[i] = 1e20;
+			if ((i == index) || (i == lastTarget)) {
+				d[i] = 1e21;
+			} else if (st.planes.sameTeam(index, i)) {
+				d[i] = 1e21;
+			} else if (targetPlane.structure <= 0) {
+				d[i] = 1e21;
 			} else {
 				d[i] = st.planes.calcIndexDistance(index, i);
 			}
@@ -198,20 +247,30 @@ st.planes = {
 	
 	shoot: function(plane) {
 		var planes = st.planes.planes;
+		var weapons = plane.weapons;
 		var targetPlane = planes[plane.target];
-		// TODO: see if hit!
-		var effect = 0;
-		var d = st.math.die(plane.d, 6, effect);
-		d = Math.max(0, d-targetPlane.armour);
-		if (d>0 && targetPlane.hull > 0) {
-			var dHull = Math.min(d, targetPlane.hull);
-			targetPlane.hull = targetPlane.hull - dHull;
-			d -= dHull;
-		}
-		if (d>0 && targetPlane.structure > 0) {
-			var dStructure = Math.min(d, targetPlane.structure);
-			targetPlane.structure = targetPlane.structure - dStructure;
-		}
+		
+		plane.shootDelayed = plane.shootDelayed + 1;
+		st.log("plane.shootDelayed[" + plane.shootDelayed + "]");
+		
+		_.each(weapons, function(weapon) {
+			var canHit = (weapon.arc == "t") || (weapon.arc == "f" && Math.abs(plane.targetA - plane.a) < 20);
+			if (canHit) {
+				var effect = 0;
+				var d1 = st.math.die(weapon.d, 6, effect);
+				d2 = Math.max(0, d1-targetPlane.armour);
+				
+				if (d2>0 && targetPlane.hull > 0) {
+					var dHull = Math.min(d2, targetPlane.hull);
+					targetPlane.hull = targetPlane.hull - dHull;
+					d2 -= dHull;
+				}
+				if (d2>0 && targetPlane.structure > 0) {
+					var dStructure = Math.min(d2, targetPlane.structure);
+					targetPlane.structure = targetPlane.structure - dStructure;
+				}
+			}
+		});
 	}
 	
 };

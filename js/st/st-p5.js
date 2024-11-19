@@ -1,3 +1,5 @@
+/* st-p5.js */
+
 function setup() {
 	st.p5.init();
 }
@@ -51,6 +53,7 @@ st.p5 = {
 
 		stroke(155, 155, 255);
 		strokeWeight(0.5);
+		
 		for (var realx = -st.p5.real.full; realx <= st.p5.real.full; realx += st.p5.real.minor) {
 			var x1 = realx / ratio;
 			var x2 = x1;
@@ -58,6 +61,7 @@ st.p5 = {
 			var y2 = st.p5.real.full / ratio;
 			line(x1, y1, x2, y2);
 		}
+
 		for (var realy = -st.p5.real.full; realy <= st.p5.real.full; realy += st.p5.real.minor) {
 			var x1 = -st.p5.real.full / ratio;
 			var x2 = st.p5.real.full / ratio;
@@ -74,6 +78,7 @@ st.p5 = {
 			var y2 = st.p5.real.full / ratio;
 			line(x1, y1, x2, y2);
 		}
+
 		for (var realy = -st.p5.real.full; realy <= st.p5.real.full; realy += st.p5.real.major) {
 			var x1 = -st.p5.real.full / ratio;
 			var x2 = st.p5.real.full / ratio;
@@ -219,25 +224,26 @@ st.p5 = {
 			
 			// planes
 			st.planes.updateTargets();
-			st.p5.updateAngles(delta);
-			st.p5.updatePositions(delta);
+			st.p5.updateAngles();
+			st.p5.updatePositions();
 		}
 		st.p5.time.last = current;
 	},
 	
-	updateAngles: function(delta) {
+	updateAngles: function() {
 		var planes = st.planes.planes;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
 			if (plane.structure > 0) {
 				if (plane.target > -1 && i != plane.target && planes[plane.target].structure > 0) {
-					var dist = st.planes.calcIndexDistance(i, plane.target);
+					var dist = st.planes.calcIndexDistance(i, plane.target) * st.p5.time.delta;
 					plane.targetDist = dist;
 					if (dist < plane.minTargetDist) {
 						st.planes.shoot(plane);
 					}				
 					if (dist > plane.minTargetDist) {
 						var targetA = st.planes.calcIndexAngle(i, plane.target);
+						plane.targetA = targetA;
 						st.p5.updatePlane(plane, targetA);
 					}
 				} else {
@@ -271,7 +277,7 @@ st.p5 = {
 		}		
 	},
 	
-	updatePositions: function(delta) {
+	updatePositions: function() {
 		var planes = st.planes.planes;
 		var scale = st.p5.time.scale;
 		for (var i = 0; i < planes.length; i++) {
