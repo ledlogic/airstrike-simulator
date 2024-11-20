@@ -381,10 +381,10 @@ st.p5 = {
 			cloud.y += drift.y;
 			
 			if (cloud.x < -st.p5.real.full) {
-				cloud.X = st.p5.real.full;
+				cloud.x = st.p5.real.full;
 			}
 			if (cloud.x > st.p5.real.full) {
-				cloud.X = -st.p5.real.full;
+				cloud.x = -st.p5.real.full;
 			}
 			if (cloud.y < -st.p5.real.full) {
 				cloud.y = st.p5.real.full;
