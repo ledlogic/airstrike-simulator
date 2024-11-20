@@ -135,8 +135,9 @@ st.p5 = {
 				var x = smoke.x / ratio;
 				var y = -smoke.y / ratio;
 				var a = smoke.a;
-				stroke(0,0,0,a);
-				circle(x, y, 2);
+				stroke(0,0,0,0);
+				fill(0,0,0,a);
+				circle(x, y, 5);
 			}
 		}
 	},
