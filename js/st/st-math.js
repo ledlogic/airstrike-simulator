@@ -37,5 +37,10 @@ st.math = {
 	},
 	randomBetween: function(low, high) {
 		return Math.random() * (high - low) + low;
+	},
+	fixColor: function(value) {
+		var ret = Math.min(value, 255);
+		ret = Math.max(ret, 0);
+		return ret;
 	}
 };

@@ -119,7 +119,7 @@ st.p5 = {
 				var y = -smoke.y / ratio;
 				var a = smoke.a;
 				stroke(0,0,0,a);
-				fill(0,0,0,0);
+				stroke(0,0,0,a);
 				circle(x, y, 2);
 			}
 		}
@@ -141,12 +141,23 @@ st.p5 = {
 				// fuselage
 				var r = 10;
 				var fuselageColor = 'black';
-				if (plane.team == 'german') {
-					fuselageColor = 'navy';
-				}
-				if (plane.team == 'soviet') {
-					fuselageColor = 'maroon';
-				}
+				
+				var team = plane.team;
+				var fuselageColor = st.teams.getTeamColor(team);
+				var brightnessRange = 5;
+				var brightness = plane.brightness;
+				var brightnessDelta = Math.round(brightnessRange * (0.5 - Math.random()));
+				brightness = brightness + brightnessDelta;
+				plane.brightness = brightness;
+				
+				fuselageColor = "rgb("
+					+ st.math.fixColor(fuselageColor[0] + brightness)
+					+ ","
+					+ st.math.fixColor(fuselageColor[1] + brightness)
+					+ ","
+					+ st.math.fixColor(fuselageColor[2] + brightness)
+					+ ")";
+								
 				var shadowPt = { x: 0, y: 0 };
 				if (mode == "shadow") {
 					fuselageColor = 'rgb(50,50,50)';

@@ -110,7 +110,8 @@ st.planes = {
 			structure: structure,
 			armour: armour,
 			weapons: weapons,
-			shootDelayed: 0
+			shootDelayed: 0,
+			brightness: 0
 		};
 		return plane;
 	},
