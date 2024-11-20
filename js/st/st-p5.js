@@ -264,6 +264,9 @@ st.p5 = {
 			st.planes.updateTargets();
 			st.p5.updateAngles();
 			st.p5.updatePositions();
+			
+			// clouds
+			st.p5.updateClouds();
 		}
 		st.p5.time.last = current;
 	},
@@ -372,8 +375,37 @@ st.p5 = {
 				plane.smokes.push(pt);
 			}
 		}
-	}
+	},
 	
+	updateClouds: function() {
+		var clouds = st.clouds.clouds;
+		var drift = st.clouds.drift;
+		for (var i = 0; i < clouds.length; i++) {
+			var cloud = clouds[i];
+			cloud.x += drift.x;
+			cloud.y += drift.y;
+			
+			if (cloud.x < -st.p5.real.full) {
+				cloud.X = st.p5.real.full;
+			}
+			if (cloud.x > st.p5.real.full) {
+				cloud.X = -st.p5.real.full;
+			}
+			if (cloud.y < -st.p5.real.full) {
+				cloud.y = st.p5.real.full;
+			}
+			if (cloud.y > st.p5.real.full) {
+				cloud.y = -st.p5.real.full;
+			}			
+			
+			var points = cloud.points;
+			for (var j = 0; j < points.length; j++) {
+				var point = points[j];
+				point.x += point.vy + st.math.randomBetween(-0.1, 0.1);
+				point.y += point.vy + st.math.randomBetween(-0.1, 0.1);
+			}
+		}
+	}
 };
 
 /* p5 methods */

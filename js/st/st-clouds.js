@@ -4,11 +4,21 @@ st.clouds = {
 	MIN_CLOUDS: 10,
 	MAX_CLOUDS: 50,
 	MIN_CLOUD_RADIUS: 250,
-	MAX_CLOUD_RADIUS: 2000,
+	MAX_CLOUD_RADIUS: 1250,
 	MIN_CLOUD_ALPHA: 50,
 	MAX_CLOUD_ALPHA: 200,
-	MIN_CLOUD_POINTS: 50,
-	MAX_CLOUD_POINTS: 100,
+	MIN_CLOUD_POINTS: 20,
+	MAX_CLOUD_POINTS: 80,
+	MIN_CLOUD_DRIFT: 5,
+	MAX_CLOUD_DRIFT: 10,
+	MIN_POINT_RADIUS: 50,
+	MAX_POINT_RADIUS: 1000,
+	MAX_POINT_VELOCITY: 0.5,
+	
+	drift: {
+		x: 0, 
+		y: 0
+	},
 
 	clouds: [],
 	
@@ -30,6 +40,9 @@ st.clouds = {
 			var cloud = st.clouds.createCloud(x, y, r, a);
 			clouds.push(cloud);
 		}
+		
+		st.clouds.drift.x = st.math.randomBetween(-st.clouds.MAX_CLOUD_DRIFT / 10, st.clouds.MAX_CLOUD_DRIFT);
+		st.clouds.drift.y = st.math.randomBetween(-st.clouds.MAX_CLOUD_DRIFT, st.clouds.MAX_CLOUD_DRIFT);
 	},
 	createCloud: function(x, y, r, a) {
 		var qtyPoints = st.math.randomBetween(st.clouds.MIN_CLOUD_POINTS, st.clouds.MAX_CLOUD_POINTS); 
@@ -40,13 +53,17 @@ st.clouds = {
 			var radians = Math.random() * 2 * Math.PI;
 			var x1 = Math.cos(radians) * r1;
 			var y1 = Math.sin(radians) * r1;
-			var r1 = st.math.randomBetween(0.1 * r, r);
+			var r1 = st.math.randomBetween(-st.clouds.MIN_POINT_RADIUS, st.clouds.MAX_POINT_RADIUS);
 			var a1 = a;
+			var vx1 = st.math.randomBetween(-st.clouds.MAX_POINT_VELOCITY, st.clouds.MAX_POINT_VELOCITY);
+			var vy1 = st.math.randomBetween(-st.clouds.MAX_POINT_VELOCITY, st.clouds.MAX_POINT_VELOCITY);
 			var point = {
 				x: x1,
 				y: y1,
 				a: a1,
-				r: r1
+				r: r1,
+				vx: vx1,
+				vy: vy1
 			}
 			points.push(point);
 		}
