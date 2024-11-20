@@ -375,29 +375,41 @@ st.p5 = {
 	updateClouds: function() {
 		var clouds = st.clouds.clouds;
 		var drift = st.clouds.drift;
+		var overflow = st.p5.real.full * 1.1;
 		for (var i = 0; i < clouds.length; i++) {
 			var cloud = clouds[i];
 			cloud.x += drift.x;
 			cloud.y += drift.y;
 			
-			if (cloud.x < -st.p5.real.full) {
-				cloud.x = st.p5.real.full;
+			var reset = false;
+			if (cloud.x < -overflow) {
+				cloud.x = overflow;
+				reset = true;
 			}
-			if (cloud.x > st.p5.real.full) {
-				cloud.x = -st.p5.real.full;
+			if (cloud.x > overflow) {
+				cloud.x = -overflow;
+				reset = true;
 			}
-			if (cloud.y < -st.p5.real.full) {
-				cloud.y = st.p5.real.full;
+			if (cloud.y < -overflow) {
+				cloud.y = overflow;
+				reset = true;
 			}
-			if (cloud.y > st.p5.real.full) {
-				cloud.y = -st.p5.real.full;
-			}			
+			if (cloud.y > overflow) {
+				cloud.y = -overflow;
+				reset = true;
+			}
+			if (reset) {
+				var points = st.clouds.createPoints(cloud);
+				cloud.points = points;
+			}
 			
 			var points = cloud.points;
 			for (var j = 0; j < points.length; j++) {
 				var point = points[j];
-				point.x += point.vy + st.math.randomBetween(-0.1, 0.1);
+				point.x += point.vx + st.math.randomBetween(-0.1, 0.1);
 				point.y += point.vy + st.math.randomBetween(-0.1, 0.1);
+				point.r += st.math.randomBetween(-0.1, 0.1);
+				point.r = Math.max(point.r, st.clouds.MIN_POINT_RADIUS);
 			}
 		}
 	}
