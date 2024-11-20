@@ -1,17 +1,16 @@
 /* st.css */
 
 * {
-	font-family: 'Courier New', serif;
+	font-family: 'Bahnschrift', sans-serif;
 }
 body {
-	border: 1px solid black;
 	line-height: 1.38;
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
 }
 h1, h2, h3, h4, h5, h6 {
-	font-family: 'Courier New', serif;
+	font-family: 'Bahnschrift', sans-serif;
 }
 h1 {
 	font-size: 1.2em;
@@ -24,13 +23,11 @@ h4 {
 	font-size: 0.8em;
 }
 .st-page {
-	border: 1px solid purple;
 	margin: 0;
 	padding: 0;
 	position: relative;	
 }
 .st-page-bk {
-	border: 1px solid red;
 	position: relative;
 	margin: 0;
 	padding: 0;
@@ -38,7 +35,6 @@ h4 {
 	width: 100%;
 }
 .st-canvas {
-	border: 1px solid orange;
 	position: absolute;
 	margin: 0;
 	padding: 0;
@@ -52,10 +48,43 @@ h4 {
 	height: 100%;
 	width: 100%;
 }
+.st-title {
+	background: #c2c2c2;
+	font-size: 20px;
+	font-style:italic;
+	font-weight: bold;
+	position: absolute;
+	margin: 0;
+	padding: 0 10px 0 10px;
+	top: 0px;
+	left: 0;
+	height: 30px;
+	width: 100%;
+	display: inline-block;
+}
+.st-actions {
+	font-size: 10px;
+	margin: 0;
+	position: absolute;
+	padding: 0;
+	top: 0px;
+	margin-top:4px;
+	right: 10px;
+	height: 10px;
+}
 .st-footer {
-	border-top: 1px solid #ccc;
-	font-family: 'Courier New', serif;
-	padding-top: 10px;
+	background: #c2c2c2;
+	font-weight: bold;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	bottom: 0px;
+	left: 0;
+	height: 20px;
+}
+.st-footer h4 {
+	margin: 0;
+	padding: 4px;
 }
 .st-footer a {
 	font-style: italic;

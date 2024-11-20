@@ -34,17 +34,7 @@ st.p5 = {
 	},
 	
 	drawBackground: function() {
-		var ratio = st.p5.real.ratio;
-
-		//background(255);
-		
 		clear();
-		
-		if (0) {
-			image(st.p5.backgroundImg,
-				-st.p5.real.full/ ratio, -st.p5.real.full/ ratio,
-				st.p5.real.full/ ratio * 2.0, st.p5.real.full/ ratio * 2.0);
-		}
 	},
 
 	drawGrid: function() {
@@ -107,6 +97,38 @@ st.p5 = {
 		line(x1, y1, x2, y2);
 	},
 
+	drawClouds: function() {
+		var ratio = st.p5.real.ratio;
+		var clouds = st.clouds.clouds;
+		for (var i = 0; i < clouds.length; i++) {
+			var cloud = clouds[i];
+
+			var x = cloud.x / ratio;
+			var y = -cloud.y / ratio;
+			var r = cloud.r / ratio;
+			var a = cloud.a;
+
+			var points = cloud.points;
+			for (var j = 0; j < points.length; j++) {
+				var point = points[j];
+				
+				var x1 = (cloud.x + point.x) / ratio;
+				var y1 = -(cloud.y + point.y) / ratio;
+				var r1 = point.r / ratio;
+				var a1 = point.a;
+				
+				stroke(0,0,0,0);
+				fill(255,255,255,a1);
+				circle(x1, y1, r1);
+			}
+
+			// red ring for debugging
+			stroke(255,0,0,a);
+			fill(0,0,0,0);
+			circle(x, y, r);
+		}
+	},
+
 	drawSmoke: function() {
 		var ratio = st.p5.real.ratio;
 		var planes = st.planes.planes;
@@ -118,7 +140,6 @@ st.p5 = {
 				var x = smoke.x / ratio;
 				var y = -smoke.y / ratio;
 				var a = smoke.a;
-				stroke(0,0,0,a);
 				stroke(0,0,0,a);
 				circle(x, y, 2);
 			}
@@ -365,6 +386,7 @@ function draw() {
 	st.p5.updateTime();
 	st.p5.drawBackground();
 	st.p5.drawGrid();
+	st.p5.drawClouds();
 	st.p5.drawPlanes({mode:"shadow"});
 	st.p5.drawSmoke();
 	st.p5.drawPlanes({mode:"normal"});

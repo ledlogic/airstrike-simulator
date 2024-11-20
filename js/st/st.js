@@ -16,9 +16,17 @@ var st = {
 	},
 
 	init: function() {
+		st.initActions();
 		st.math.init();
 		st.render.init();
+		st.clouds.init();
 		st.render.render();
+	},
+	
+	initActions: function() {
+		$(".st-reload").on("click", function() {
+			window.location.reload();
+		});
 	}
 };
 
