@@ -121,11 +121,6 @@ st.p5 = {
 				fill(255,255,255,a1);
 				circle(x1, y1, r1);
 			}
-
-			// red ring for debugging
-			stroke(255,0,0,a);
-			fill(0,0,0,0);
-			circle(x, y, r);
 		}
 	},
 
