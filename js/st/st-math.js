@@ -39,7 +39,8 @@ st.math = {
 		return Math.random() * (high - low) + low;
 	},
 	fixColor: function(value) {
-		var ret = Math.min(value, 255);
+		var ret = value;
+		ret = Math.min(ret, 255);
 		ret = Math.max(ret, 0);
 		return ret;
 	}

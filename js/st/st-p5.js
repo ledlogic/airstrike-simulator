@@ -149,7 +149,6 @@ st.p5 = {
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
 			if (plane.structure > 0) {
-
 				var x = plane.x / ratio;
 				var y = -plane.y / ratio;
 				var a = plane.a;
@@ -157,84 +156,215 @@ st.p5 = {
 	
 				// fuselage
 				var r = 10;
-				var fuselageColor = 'black';
-				
 				var team = plane.team;
 				var fuselageColor = st.teams.getTeamColor(team);
-				var brightnessRange = 5;
+				var brightnessRange = 1.5;
 				var brightness = plane.brightness;
 				var brightnessDelta = Math.round(brightnessRange * (0.5 - Math.random()));
 				brightness = brightness + brightnessDelta;
 				plane.brightness = brightness;
 				
-				fuselageColor = "rgb("
+				var fuselageColorStr = "rgb("
 					+ st.math.fixColor(fuselageColor[0] + brightness)
 					+ ","
 					+ st.math.fixColor(fuselageColor[1] + brightness)
 					+ ","
 					+ st.math.fixColor(fuselageColor[2] + brightness)
 					+ ")";
+
+				var wingColorStr = "rgb("
+					+ st.math.fixColor(fuselageColor[0] + brightness - 30.0)
+					+ ","
+					+ st.math.fixColor(fuselageColor[1] + brightness - 30.0)
+					+ ","
+					+ st.math.fixColor(fuselageColor[2] + brightness - 30.0)
+					+ ")";
 								
 				var shadowPt = { x: 0, y: 0 };
 				if (mode == "shadow") {
-					fuselageColor = 'rgb(50,50,50)';
+					fuselageColorStr = 'rgb(50,50,50)';
+					wingColorStr = 'rgb(50,50,50)';
 					shadowPt = { x: -10, y: 10 };
 					r = 5;
 				}
-				stroke(fuselageColor);
-				strokeWeight(0.3 * r);
-				fill(0, 0, 0, 0);
-
-				var x1 = x + 0.75 * r * Math.cos(canvasa / 180.0 * Math.PI) + shadowPt.x;
-				var y1 = y - 0.75 * r * Math.sin(canvasa / 180.0 * Math.PI) + shadowPt.y;
-				var fx2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.x;
-				var fy2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.y;
-				line(x1, y1, fx2, fy2);
 	
 				// wing
-				var winga = canvasa + 90.0;
-				var x1 = x + r * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
-				var y1 = y - r * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
-				var x2 = x + r * Math.cos((winga + 180.0) / 180.0 * Math.PI) + shadowPt.x;
-				var y2 = y - r * Math.sin((winga + 180.0) / 180.0 * Math.PI) + shadowPt.y;
-				line(x1, y1, x2, y2);
-	
-				// tail
-				strokeWeight(2.5);
-				var tr = 0.3 * r;
-				var rr = 0.9;
-				var tx2 = ((1-rr) * x + rr*fx2);
-				var ty2 = ((1-rr) * y + rr*fy2);
-				var x1 = tx2 + tr * Math.cos(winga / 180.0 * Math.PI);
-				var y1 = ty2 - tr * Math.sin(winga / 180.0 * Math.PI);
-				var x2 = tx2 + tr * Math.cos((winga + 180.0) / 180.0 * Math.PI);
-				var y2 = ty2 - tr * Math.sin((winga + 180.0) / 180.0 * Math.PI);
-				line(x1, y1, x2, y2);
+				switch (plane.type) {
+					case "tl5-biplane":
+						// tail
+						var winga = canvasa + 160.0;
+						var wingb = canvasa - 160.0;
+						var x1 = x + r * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+						var x2 = x + r * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						strokeWeight(2.5);
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						//  lower wing
+						var winga = canvasa + 85.0;
+						var wingb = canvasa - 85.0;
+						var x1 = x + r * 0.9 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.9 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+						var x2 = x + r * 0.9 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.9 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						// fuselage
+						var x1 = x + 0.75 * r * Math.cos(canvasa / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - 0.75 * r * Math.sin(canvasa / 180.0 * Math.PI) + shadowPt.y;
+						var fx2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.x;
+						var fy2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.y;
+						fill(0, 0, 0, 0);
+						strokeWeight(0.3 * r);
+						stroke(fuselageColorStr);
+						line(x1, y1, fx2, fy2);
+
+						// top wing
+						var winga = canvasa + 75.0;
+						var wingb = canvasa - 75.0;
+						var x1 = x + r * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+						var x2 = x + r * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						stroke(fuselageColorStr);
+						line(x1, y1, x2, y2);
+					
+						break;
+
+					case "tl6-propfighter": 
+						// tail
+						var winga = canvasa + 155.0;
+						var wingb = canvasa - 155.0;
+						var x1 = x + r * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+						var x2 = x + r * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						strokeWeight(1.8);
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						// wing
+						var winga = canvasa + 85.0;
+						var wingb = canvasa - 85.0;
+						var x1 = x + r * 0.9 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.9 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+						var x2 = x + r * 0.9 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.9 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						strokeWeight(3);
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+			
+						// fuselage
+						var x1 = x + 0.75 * r * Math.cos(canvasa / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - 0.75 * r * Math.sin(canvasa / 180.0 * Math.PI) + shadowPt.y;
+						var fx2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.x;
+						var fy2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.y;
+						fill(0, 0, 0, 0);
+						strokeWeight(0.3 * r);
+						stroke(fuselageColorStr);
+						line(x1, y1, fx2, fy2);
+					
+						break;
+
+					case "tl6-jetfighter":
+						// tail
+						var sweep = 160.0;
+						var winga = canvasa + sweep;
+						var x1 = x + r * 1 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 1 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+
+						var sweep = 180.0;
+						var wingc = canvasa + sweep;
+						var x2 = x + r * 0.6 * Math.cos(wingc / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.6 * Math.sin(wingc / 180.0 * Math.PI) + shadowPt.y;
+						strokeWeight(2);
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						var sweep = 160.0;
+						var wingb = canvasa - sweep;
+						var x1 = x + r * 1 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 1 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						var sweep = 180.0;
+						var wingc = canvasa - sweep;
+						var x2 = x + r * 0.6 * Math.cos(wingc / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.6 * Math.sin(wingc / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+						
+						// engine 
+						var sweep = 20.0;
+						var winga = canvasa + 90 - sweep;
+						var wingb = canvasa + 90 + 2 * sweep;
+						var x1 = x + r * 0.45 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.45 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+
+						var x2 = x + r * 0.45 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.45 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+						
+						var winga = canvasa - 90 - 2*sweep;
+						var wingb = canvasa - 90 + sweep;
+						var x1 = x + r * 0.45 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.45 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+
+						var x2 = x + r * 0.45 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.45 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						// wing 
+						var sweep = 105.0;
+						var winga = canvasa + sweep;
+						var x1 = x + r * 0.9 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.9 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+
+						var sweep = 85.0;
+						var wingc = canvasa + sweep;
+						var x2 = x + r * 0.1 * Math.cos(wingc / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.1 * Math.sin(wingc / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						var sweep = 105.0;
+						var wingb = canvasa - sweep;
+						var x1 = x + r * 0.9 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.9 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						var sweep = 85.0;
+						var wingc = canvasa - sweep;
+						var x2 = x + r * 0.1 * Math.cos(wingc / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.1 * Math.sin(wingc / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+						
+						// fuselage
+						var x1 = x + 0.6 * r * Math.cos(canvasa / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - 0.6 * r * Math.sin(canvasa / 180.0 * Math.PI) + shadowPt.y;
+						var fx2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.x;
+						var fy2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.y;
+						fill(0, 0, 0, 0);
+						strokeWeight(0.2 * r);
+						stroke(fuselageColorStr);
+						line(x1, y1, fx2, fy2);
+					
+						break;
+				}
 	
 				// detail
-				if (opts.detail) {
-					fill(fuselageColor);
-					textFont(st.p5.font);
-					var t = "p" + i;
-					text(t, x - 20, y + 20);
-	
-	 				var t = " (" + Math.round(plane.x) + "m, " + Math.round(plane.y) + "m, " + Math.round(a) + "°)";
-					text(t, x - 20, y + 30);
-		
-					var t = " hull: " + Math.round(plane.hull) + ", structure: " + Math.round(plane.structure);
-					text(t, x - 20, y + 40);
-	
-					if (plane.target != -1) {
-						var t = "-> p" + plane.target + ": " + Math.round(plane.targetDist) + "m";
-						text(t, x - 20, y + 50);
-					}
-				} else {
-					fill(fuselageColor);
-					textFont(st.p5.font);
-					var t = "p" + i;
-					text(t, x - 20, y + 20);
-					
-				}	
+				fill(fuselageColorStr);
+				textFont(st.p5.font);
+				var t = "p" + i;
+				text(t, x - 8, y + 24);
 			}
 		}
 	},

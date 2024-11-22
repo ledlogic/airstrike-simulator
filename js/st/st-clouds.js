@@ -58,8 +58,6 @@ st.clouds = {
 		return cloud;
 	},
 	createPoints: function(cloud) {
-		var x = cloud.x;
-		var y = cloud.y;
 		var r = cloud.r;
 		var a = cloud.a;
 		

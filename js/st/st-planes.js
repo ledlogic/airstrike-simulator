@@ -6,6 +6,7 @@ const KPH_TO_MPM = 1000 / 60 / 10;
 st.planes = {
 	data: {
 		"bf-109": {
+			type: "tl6-propfighter",
 			v: MAX_TO_CRUISE * 588 * KPH_TO_MPM,
 			hull: 3,
 			structure: 3,
@@ -18,7 +19,22 @@ st.planes = {
 				}
 			]
 		},
+		"me-262": {
+			type: "tl6-jetfighter",
+			v: MAX_TO_CRUISE * 900 * KPH_TO_MPM,
+			hull: 3,
+			structure: 8,
+			armour: 4,
+			weapons: [
+				{
+					"arc": "f",
+					"d": 7,
+					"ap": "S"
+				}
+			]
+		},
 		"po-2": {
+			type: "tl5-biplane",
 			v: MAX_TO_CRUISE * 152 * KPH_TO_MPM,
 			hull: 1,
 			structure: 1,
@@ -55,10 +71,11 @@ st.planes = {
 			}
 		}
 		st.planes.createPlanes("german", "bf-109", 3);
+		//st.planes.createPlanes("german", "me-262", 3);
 		st.planes.createPlanes("soviet", "po-2", 12);
 	},
 
-	createPlanes: function(team, type, qty, opts) {
+	createPlanes: function(team, design, qty, opts) {
 		var full = st.p5.real.full;
 		var spread = 0.5;
 		for (var i = 0; i < qty; i++) {
@@ -66,13 +83,13 @@ st.planes = {
 				var x = st.math.randomBetween(-full, (-1 + spread) * full);
 				var y = st.math.randomBetween(-spread * full, spread * full);
 				var a = st.math.randomBetween(0, 180);
-				var homeAngle = 280;
+				var homeAngle = 260.0;
 			}
 			if (team == 'soviet') {
 				var x = st.math.randomBetween(spread * full, full);
 				var y = st.math.randomBetween(-spread * full, spread * full);
 				var a = st.math.randomBetween(180, 360);
-				var homeAngle = 80;
+				var homeAngle = 100.0;
 			}			
 			if (opts != null) {
 				if (opts.x != null) {
@@ -82,20 +99,23 @@ st.planes = {
 					y = opts.y;
 				}
 			}
-			
-			var v = st.planes.data[type].v;
-			var hull = st.planes.data[type].hull;
-			var structure = st.planes.data[type].structure;
-			var armour = st.planes.data[type].armour;
-			var weapons = st.planes.data[type].weapons;
-			var plane = st.planes.createPlane(team, type, x, y, a, homeAngle, v, hull, structure, armour, weapons);
+		
+			var data = st.planes.data[design];
+			var v = data.v;
+			var type = data.type;
+			var hull = data.hull;
+			var structure = data.structure;
+			var armour = data.armour;
+			var weapons = data.weapons;
+			var plane = st.planes.createPlane(team, design, type, x, y, a, homeAngle, v, hull, structure, armour, weapons);
 			st.planes.planes.push(plane);
 		}
 	},
 
-	createPlane: function(team, type, x, y, a, homeAngle, v, hull, structure, armour, weapons) {
+	createPlane: function(team, design, type, x, y, a, homeAngle, v, hull, structure, armour, weapons) {
 		var plane = {
 			team: team,
+			design: design,
 			type: type,
 			x: x,
 			y: y,
@@ -276,5 +296,4 @@ st.planes = {
 	minDistTarget: function(plane) {
 		return 35000;
 	}
-	
 };
