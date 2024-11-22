@@ -17,7 +17,8 @@ st.planes = {
 					"d": 6,
 					"ap": "S"
 				}
-			]
+			],
+			smoke: true
 		},
 		"me-262": {
 			type: "tl6-jetfighter",
@@ -31,7 +32,8 @@ st.planes = {
 					"d": 7,
 					"ap": "S"
 				}
-			]
+			],
+			smoke: false
 		},
 		"po-2": {
 			type: "tl5-biplane",
@@ -45,7 +47,8 @@ st.planes = {
 					"d": 3,
 					"ap": "S"
 				}
-			]
+			],
+			smoke: true
 		}
 	},
 
@@ -106,38 +109,34 @@ st.planes = {
 				}
 			}
 		
-			var data = st.planes.data[design];
-			var v = data.v;
-			var type = data.type;
-			var hull = data.hull;
-			var structure = data.structure;
-			var armour = data.armour;
-			var weapons = data.weapons;
-			var plane = st.planes.createPlane(team, design, type, x, y, a, homeAngle, v, hull, structure, armour, weapons);
+			var plane = st.planes.createPlane(team, design, x, y, a, homeAngle);
 			st.planes.planes.push(plane);
 		}
 	},
 
-	createPlane: function(team, design, type, x, y, a, homeAngle, v, hull, structure, armour, weapons) {
+	createPlane: function(team, design, x, y, a, homeAngle) {
+		var data = st.planes.data[design];
+		
 		var plane = {
 			team: team,
 			design: design,
-			type: type,
+			type: data.type,
 			x: x,
 			y: y,
 			a: a,
 			homeAngle: homeAngle,
-			v: v,
+			v: data.v,
 			target: -1,
 			targetA: -1,
 			targetDist: 1e10,
 			smokes: [],
-			hull: hull,
-			structure: structure,
-			armour: armour,
-			weapons: weapons,
+			hull: data.hull,
+			structure: data.structure,
+			armour: data.armour,
+			weapons: data.weapons,
+			smoke: data.smoke,
 			shootDelayed: 0,
-			brightness: 0
+			brightnessDelta: 0
 		};
 		return plane;
 	},
