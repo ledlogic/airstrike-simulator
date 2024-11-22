@@ -54,7 +54,11 @@ st.clouds = {
 		
 		var points = st.clouds.createPoints(cloud);
 		cloud.points = points;
-		
+
+		cloud.drift = {};
+		cloud.drift.x = 0.125 * st.math.randomBetween(-st.clouds.MAX_CLOUD_DRIFT, st.clouds.MAX_CLOUD_DRIFT);
+		cloud.drift.y = 0.125 * st.math.randomBetween(-st.clouds.MAX_CLOUD_DRIFT, st.clouds.MAX_CLOUD_DRIFT);
+	
 		return cloud;
 	},
 	createPoints: function(cloud) {

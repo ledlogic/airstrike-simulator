@@ -509,8 +509,8 @@ st.p5 = {
 		var overflow = st.p5.real.full * 1.1;
 		for (var i = 0; i < clouds.length; i++) {
 			var cloud = clouds[i];
-			cloud.x += drift.x;
-			cloud.y += drift.y;
+			cloud.x += drift.x + cloud.drift.x;
+			cloud.y += drift.y + cloud.drift.y;
 			
 			var reset = false;
 			if (cloud.x < -overflow) {

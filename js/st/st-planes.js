@@ -76,7 +76,6 @@ st.planes = {
 				return;
 			default:
 				st.planes.createPlanes("german", "bf-109", 3);
-				//st.planes.createPlanes("german", "me-262", 3);
 				st.planes.createPlanes("soviet", "po-2", 12);
 				return;
 		}
