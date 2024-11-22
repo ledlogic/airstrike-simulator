@@ -6,6 +6,8 @@ Example urls:
 * http://localhost:8080/as-sim/?simulation=angle&angle=22.5
 * http://localhost:8080/as-sim/?simulation=angle&angle=45
 * http://localhost:8080/as-sim/?simulation=angle&angle=90
+* http://localhost:8080/as-sim/?simulation=acti
+* http://localhost:8080/as-sim/?simulation=actii
 */
 
 var st = {
@@ -17,10 +19,22 @@ var st = {
 
 	init: function() {
 		st.initActions();
+		st.initBackground();
 		st.math.init();
 		st.render.init();
 		st.clouds.init();
 		st.render.render();
+	},
+	
+	initBackground: function() {
+		var urls = [
+			"img/minsk.jpg",
+			"img/novgorod.jpg",
+			"img/odesa.jpg",
+			"img/pripyat-river.jpg"
+		]
+		var url = urls[st.math.dieArray(urls)];
+		$(".st-page-img").attr("src", url);
 	},
 	
 	initActions: function() {

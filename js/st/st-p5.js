@@ -119,7 +119,6 @@ st.p5 = {
 				circle(x1, y1, r1);
 			}
 		}
-
 	},
 
 	drawSmoke: function() {
