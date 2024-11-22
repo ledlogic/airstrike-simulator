@@ -4,16 +4,16 @@ st.clouds = {
 	MIN_CLOUDS: 10,
 	MAX_CLOUDS: 100,
 	MIN_CLOUD_RADIUS: 250,
-	MAX_CLOUD_RADIUS: 1500,
+	MAX_CLOUD_RADIUS: 2500,
 	MIN_CLOUD_ALPHA: 25,
 	MAX_CLOUD_ALPHA: 125,
 	MIN_CLOUD_POINTS: 20,
-	MAX_CLOUD_POINTS: 80,
+	MAX_CLOUD_POINTS: 100,
 	MIN_CLOUD_DRIFT: 5,
 	MAX_CLOUD_DRIFT: 10,
-	MIN_POINT_RADIUS: 250,
-	MAX_POINT_RADIUS: 750,
-	MAX_POINT_VELOCITY: 0.25,
+	MIN_POINT_RADIUS: 50,
+	MAX_POINT_RADIUS: 500,
+	MAX_POINT_VELOCITY: 0.5,
 	POINT_ALPHA_DELTA: 10,
 	
 	drift: {
@@ -29,6 +29,7 @@ st.clouds = {
 	},
 	initClouds: function() {
 		var qtyClouds = st.math.randomBetween(st.clouds.MIN_CLOUDS, st.clouds.MAX_CLOUDS);
+		//st.log(qtyClouds);
 		
 		var clouds = st.clouds.clouds;
 		var full = st.p5.real.full;
@@ -65,14 +66,16 @@ st.clouds = {
 		var r = cloud.r;
 		var a = cloud.a;
 		
-		var qtyPoints = st.math.randomBetween(st.clouds.MIN_CLOUD_POINTS, st.clouds.MAX_CLOUD_POINTS); 
+		var qtyPoints = st.math.randomBetween(st.clouds.MIN_CLOUD_POINTS, st.clouds.MAX_CLOUD_POINTS) * cloud.r / 750.0;
+		//st.log(qtyPoints);
+		
 		var points = [];
 		for (var i = 0; i< qtyPoints; i++) {
 			var r1 = Math.random() * r;
 			var radians = Math.random() * 2 * Math.PI;
 			var x1 = Math.cos(radians) * r1;
 			var y1 = Math.sin(radians) * r1;
-			var r1 = st.math.randomBetween(-st.clouds.MIN_POINT_RADIUS, st.clouds.MAX_POINT_RADIUS);
+			var r1 = st.math.randomBetween(-st.clouds.MIN_POINT_RADIUS, st.clouds.MAX_POINT_RADIUS) + r / 5.0;
 			var a1 = st.math.randomBetween(a - st.clouds.POINT_ALPHA_DELTA, a + st.clouds.POINT_ALPHA_DELTA);
 			var vx1 = st.math.randomBetween(-st.clouds.MAX_POINT_VELOCITY, st.clouds.MAX_POINT_VELOCITY);
 			var vy1 = st.math.randomBetween(-st.clouds.MAX_POINT_VELOCITY, st.clouds.MAX_POINT_VELOCITY);
@@ -82,10 +85,16 @@ st.clouds = {
 				a: a1,
 				r: r1,
 				vx: vx1,
-				vy: vy1
+				vy: vy1,
+				radians: radians
 			}
 			points.push(point);
 		}
+		
+		 points = _.sortBy(points, function (point) {
+            return point.radians;
+        });
+			
 		return points;
 	}
 };

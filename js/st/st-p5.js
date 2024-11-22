@@ -100,14 +100,11 @@ st.p5 = {
 	drawClouds: function() {
 		var ratio = st.p5.real.ratio;
 		var clouds = st.clouds.clouds;
+
 		for (var i = 0; i < clouds.length; i++) {
 			var cloud = clouds[i];
-
-			var x = cloud.x / ratio;
-			var y = -cloud.y / ratio;
-			var r = cloud.r / ratio;
-			var a = cloud.a;
-
+			
+			// draw points		
 			var points = cloud.points;
 			for (var j = 0; j < points.length; j++) {
 				var point = points[j];
@@ -122,6 +119,7 @@ st.p5 = {
 				circle(x1, y1, r1);
 			}
 		}
+
 	},
 
 	drawSmoke: function() {
@@ -159,25 +157,25 @@ st.p5 = {
 				var team = plane.team;
 				var fuselageColor = st.teams.getTeamColor(team);
 				var brightnessRange = 1.5;
-				var brightness = plane.brightness;
-				var brightnessDelta = Math.round(brightnessRange * (0.5 - Math.random()));
-				brightness = brightness + brightnessDelta;
-				plane.brightness = brightness;
+				var brightnessDelta = plane.brightnessDelta;
+				var newDelta = Math.round(brightnessRange * (0.5 - Math.random()));
+				brightnessDelta += newDelta;
+				plane.brightness = brightnessDelta;
 				
 				var fuselageColorStr = "rgb("
-					+ st.math.fixColor(fuselageColor[0] + brightness)
+					+ st.math.fixColor(fuselageColor[0] + brightnessDelta)
 					+ ","
-					+ st.math.fixColor(fuselageColor[1] + brightness)
+					+ st.math.fixColor(fuselageColor[1] + brightnessDelta)
 					+ ","
-					+ st.math.fixColor(fuselageColor[2] + brightness)
+					+ st.math.fixColor(fuselageColor[2] + brightnessDelta)
 					+ ")";
 
 				var wingColorStr = "rgb("
-					+ st.math.fixColor(fuselageColor[0] + brightness - 30.0)
+					+ st.math.fixColor(fuselageColor[0] + brightnessDelta - 30.0)
 					+ ","
-					+ st.math.fixColor(fuselageColor[1] + brightness - 30.0)
+					+ st.math.fixColor(fuselageColor[1] + brightnessDelta - 30.0)
 					+ ","
-					+ st.math.fixColor(fuselageColor[2] + brightness - 30.0)
+					+ st.math.fixColor(fuselageColor[2] + brightnessDelta - 30.0)
 					+ ")";
 								
 				var shadowPt = { x: 0, y: 0 };
@@ -472,33 +470,41 @@ st.p5 = {
 	updateSmokes: function() {
 		var smokeDelta = 10;
 		
+		var drift = st.clouds.drift;
+
 		var planes = st.planes.planes;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
-
-			// fade smoke
-			var smokes = plane.smokes;
-			var minJ = 0;
-			for (var j = 0; j < smokes.length; j++) {
-				var smoke = smokes[j];
-				smoke.a = smoke.a - smokeDelta;
-				if (smoke.a <= 0) {
-					minJ = j;	
+			
+			if (plane.smoke) {
+				// fade smoke
+				var smokes = plane.smokes;
+				var minJ = 0;
+				for (var j = 0; j < smokes.length; j++) {
+					var smoke = smokes[j];
+					smoke.a = smoke.a - smokeDelta;
+					
+					smoke.x += drift.x;
+					smoke.y += drift.y;
+					
+					if (smoke.a <= 0) {
+						minJ = j;	
+					}
 				}
-			}
-			if (minJ > 0) {
-				plane.smokes = _.drop(smokes, minJ);
-			}
-
-			if (plane.structure > 0) {
-				var x = plane.x;
-				var y = plane.y;
-				var pt = {
-					x : x, 
-					y: y,
-					a: 180
-				};
-				plane.smokes.push(pt);
+				if (minJ > 0) {
+					plane.smokes = _.drop(smokes, minJ);
+				}
+	
+				if (plane.structure > 0) {
+					var x = plane.x;
+					var y = plane.y;
+					var pt = {
+						x : x, 
+						y: y,
+						a: 180
+					};
+					plane.smokes.push(pt);
+				}
 			}
 		}
 	},
