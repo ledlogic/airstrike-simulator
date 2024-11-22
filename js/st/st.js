@@ -27,6 +27,12 @@ var st = {
 		$(".st-reload").on("click", function() {
 			window.location.reload();
 		});
+		$(".st-act-i").on("click", function() {
+			window.location.replace("?simulation=acti");
+		});
+		$(".st-act-ii").on("click", function() {
+			window.location.replace("?simulation=actii");
+		});
 	}
 };
 
