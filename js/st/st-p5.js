@@ -455,10 +455,10 @@ st.p5 = {
 			var ms = Math.sin(canvasa / 180.0 * Math.PI);
 
 			stroke(0,0,0,0);
-			fill(58,52,32,255);
 			for (var b = 0; b< 5; b++) {
 				var xb = (x + b * mc * v * st.p5.time.delta / scale) / ratio;
-				var yb = (-y + b * ms * v * st.p5.time.delta / scale) / ratio;
+				var yb = (-y - b * ms * v * st.p5.time.delta / scale) / ratio;
+				fill(58,52,32,255);
 				circle(xb, yb, 4);
 			}
 		}		
