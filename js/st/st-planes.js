@@ -97,7 +97,26 @@ st.planes = {
 				}
 			],
 			smoke: true
-		}
+		},
+		"mig-25": {
+			type: "tl7-jetfighter",
+			v: MAX_TO_CRUISE * 3000 * KPH_TO_MPM,
+			minv: MAX_TO_CRUISE * 290 * KPH_TO_MPM,
+			hull: 20,
+			structure: 20,
+			armour: 4,
+			weapons: [
+				{
+					"type": "missle",
+					"armament": "R-40",
+					"arc": "f",
+					"d": 9,
+					"ap": "S"
+				}
+			],
+			smoke: false
+		},
+
 
 	},
 
@@ -127,7 +146,8 @@ st.planes = {
 				st.planes.createPlanes("german", "me-262", 4);
 				return;
 			case "actiii":
-				st.planes.createPlanes("soviet", "po-2", 12);
+				st.planes.createPlanes("soviet", "po-2", 6);
+				st.planes.createPlanes("soviet", "mig-25", 6);
 				st.cities.createCity("soviet", "Capital");
 				st.planes.createPlanes("german", "me-262", 4);
 				st.planes.createPlanes("german", "he-177", 2);

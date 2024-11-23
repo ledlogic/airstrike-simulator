@@ -412,6 +412,83 @@ st.p5 = {
 						line(x1, y1, fx2, fy2);
 					
 						break;
+						
+					case "tl7-jetfighter":
+						// tail
+						var sweep = 160.0;
+						var winga = canvasa + sweep;
+						var x1 = x + r * 1 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 1 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+
+						var sweep = 180.0;
+						var wingc = canvasa + sweep;
+						var x2 = x + r * 0.6 * Math.cos(wingc / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.6 * Math.sin(wingc / 180.0 * Math.PI) + shadowPt.y;
+						strokeWeight(3);
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						var sweep = 160.0;
+						var wingb = canvasa - sweep;
+						var x1 = x + r * 1 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 1 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						var sweep = 180.0;
+						var wingc = canvasa - sweep;
+						var x2 = x + r * 0.6 * Math.cos(wingc / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.6 * Math.sin(wingc / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+												
+						// wing 
+						var sweep = 125.0;
+						var winga = canvasa + sweep;
+						var x1 = x + r * 0.8 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.8 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+
+						var wingc = canvasa + sweep;
+						var x2 = x ;
+						var y2 = y ;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						var sweep = 125.0;
+						var wingb = canvasa - sweep;
+						var x1 = x + r * 0.8 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.8 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						var wingc = canvasa - sweep;
+						var x2 = x ;
+						var y2 = y ;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+						
+						var sweep = 120.0;
+						var winga = canvasa + sweep;
+						var x1 = x + r * 0.8 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.8 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+
+						var wingb = canvasa - sweep;
+						var x2 = x + r * 0.8 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.8 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+						
+						// fuselage
+						var x1 = x + 0.6 * r * Math.cos(canvasa / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - 0.6 * r * Math.sin(canvasa / 180.0 * Math.PI) + shadowPt.y;
+						var fx2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.x;
+						var fy2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.y;
+						fill(0, 0, 0, 0);
+						strokeWeight(0.2 * r);
+						stroke(fuselageColorStr);
+						line(x1, y1, fx2, fy2);
+					
+						break;
 				}
 				
 				// detail
