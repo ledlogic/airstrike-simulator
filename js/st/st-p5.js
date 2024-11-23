@@ -184,7 +184,7 @@ st.p5 = {
 					shadowPt = { x: -10, y: 10 };
 					r = 5;
 				}
-	
+
 				// wing
 				switch (plane.type) {
 					case "tl5-biplane":
@@ -356,196 +356,44 @@ st.p5 = {
 					
 						break;
 				}
-	
+				
 				// detail
 				fill(fuselageColorStr);
 				textFont(st.p5.font);
 				var t = "p" + i;
 				text(t, x - 8, y + 24);
-			}
-		}
-	},
-	
-	updateTime: function() {
-		var current = millis();
-		st.p5.time.current = current;
-	
-		var smokeDelta = 75;
-		var last = st.p5.time.last;
-		if (current) {
-			var delta = current - last;
-			st.p5.time.delta = delta;
-			
-			// smokes			
-			st.p5.time.cumDelta += delta;		
-			if (st.p5.time.cumDelta > smokeDelta) {
-				st.p5.updateSmokes();
-				st.p5.time.cumDelta -= smokeDelta;
-			}
-			
-			// planes
-			st.planes.updateTargets();
-			st.p5.updateAngles();
-			st.p5.updatePositions();
-			
-			// clouds
-			st.p5.updateClouds();
-		}
-		st.p5.time.last = current;
-	},
-	
-	updateAngles: function() {
-		var planes = st.planes.planes;
-		for (var i = 0; i < planes.length; i++) {
-			var plane = planes[i];
-			if (plane.structure > 0) {
-				if (plane.target > -1 && i != plane.target && planes[plane.target].structure > 0) {
-					var dist = st.planes.calcIndexDistance(i, plane.target) * st.p5.time.delta;
-					plane.targetDist = dist;
-					if (dist < st.planes.minDistTarget(plane)) {
-						st.planes.shoot(plane);
+				
+				// weapon radius - causes plane to disappear.
+				
+				if (mode != "shadow") {
+					var dist = st.planes.getAllWeaponDist(plane);	
+					var adelta = 10;
+					
+					var amin = 0;
+					var amax = 0;
+					
+					switch (plane.weapons[0].arc) {
+						case "f":
+							amin = a - 20;
+							amax = a + 20;
+							break;
+						default:
+							amin = a - 180;
+							amax = a + 180;
+							break;
 					}
-					var targetA = st.planes.calcIndexAngle(i, plane.target);
-					plane.targetA = targetA;
-					st.p5.updatePlane(plane, targetA);
-				} else {
-					var targetA = plane.homeAngle;
-					st.p5.updatePlane(plane, targetA);
-				}
-			}
-		}
-	},
-	
-	updatePlane: function(plane, targetA) {
-		var planeA = plane.a;
-		var dA = (targetA - planeA);
-		if (dA > 180) {
-			dA = 180 - dA;
-		}
-		var deltaA = 0;
-		if (dA > 0) {
-			deltaA = Math.min(dA, 3);
-		}
-		if (dA < 0) {
-			deltaA = Math.max(dA, -3);
-		}
-		plane.a += deltaA;
-		
-		while (plane.a > 360.0) {
-			plane.a -= 360.0;
-		}
-		while (plane.a < 0.0) {
-			plane.a += 360.0;
-		}		
-	},
-	
-	updatePositions: function() {
-		var planes = st.planes.planes;
-		var scale = st.p5.time.scale;
-		for (var i = 0; i < planes.length; i++) {
-			var plane = planes[i];
-
-			if (plane.structure > 0) {
-				var x = plane.x;
-				var y = plane.y;
-				var a = plane.a;
-				var v = plane.v;
-				
-				// convert from geographic
-				var canvasa = 90.0 - a;
-	
-				var mc = Math.cos(canvasa / 180.0 * Math.PI);
-				var ms = Math.sin(canvasa / 180.0 * Math.PI);
-	
-				x += mc * v * st.p5.time.delta / scale;
-				y += ms * v * st.p5.time.delta / scale;
-				
-				plane.x = x;
-				plane.y = y;
-			}
-		}
-	},
-	
-	updateSmokes: function() {
-		var smokeDelta = 10;
-		
-		var drift = st.clouds.drift;
-
-		var planes = st.planes.planes;
-		for (var i = 0; i < planes.length; i++) {
-			var plane = planes[i];
-			
-			if (plane.smoke) {
-				// fade smoke
-				var smokes = plane.smokes;
-				var minJ = 0;
-				for (var j = 0; j < smokes.length; j++) {
-					var smoke = smokes[j];
-					smoke.a = smoke.a - smokeDelta;
-					
-					smoke.x += drift.x;
-					smoke.y += drift.y;
-					
-					if (smoke.a <= 0) {
-						minJ = j;	
+										
+					for (var a1 = amin; a1 < amax; a1 += adelta) {
+						var canvasa1 = 90.0 - a1;
+						var x1 = x + (dist * Math.cos(canvasa1 / 180.0 * Math.PI)) / ratio;
+						var y1 = y - (dist * Math.sin(canvasa1 / 180.0 * Math.PI)) / ratio;
+						var x2 = x + (dist * Math.cos((canvasa1 - adelta) / 180.0 * Math.PI)) / ratio;
+						var y2 = y - (dist * Math.sin((canvasa1 - adelta) / 180.0 * Math.PI)) / ratio;
+						strokeWeight(1);
+						stroke("orange");
+						line(x1, y1, x2, y2);
 					}
 				}
-				if (minJ > 0) {
-					plane.smokes = _.drop(smokes, minJ);
-				}
-	
-				if (plane.structure > 0) {
-					var x = plane.x;
-					var y = plane.y;
-					var pt = {
-						x : x, 
-						y: y,
-						a: 180
-					};
-					plane.smokes.push(pt);
-				}
-			}
-		}
-	},
-	
-	updateClouds: function() {
-		var clouds = st.clouds.clouds;
-		var drift = st.clouds.drift;
-		var overflow = st.p5.real.full * 1.1;
-		for (var i = 0; i < clouds.length; i++) {
-			var cloud = clouds[i];
-			cloud.x += drift.x + cloud.drift.x;
-			cloud.y += drift.y + cloud.drift.y;
-			
-			var reset = false;
-			if (cloud.x < -overflow) {
-				cloud.x = overflow;
-				reset = true;
-			}
-			if (cloud.x > overflow) {
-				cloud.x = -overflow;
-				reset = true;
-			}
-			if (cloud.y < -overflow) {
-				cloud.y = overflow;
-				reset = true;
-			}
-			if (cloud.y > overflow) {
-				cloud.y = -overflow;
-				reset = true;
-			}
-			if (reset) {
-				var points = st.clouds.createPoints(cloud);
-				cloud.points = points;
-			}
-			
-			var points = cloud.points;
-			for (var j = 0; j < points.length; j++) {
-				var point = points[j];
-				point.x += point.vx + st.math.randomBetween(-0.1, 0.1);
-				point.y += point.vy + st.math.randomBetween(-0.1, 0.1);
-				point.r += st.math.randomBetween(-0.1, 0.1);
-				point.r = Math.max(point.r, st.clouds.MIN_POINT_RADIUS);
 			}
 		}
 	}
@@ -558,7 +406,7 @@ function setup() {
 }
 
 function draw() {
-	st.p5.updateTime();
+	st.time.updateTime();
 	st.p5.drawBackground();
 	st.p5.drawGrid();
 	st.p5.drawClouds();

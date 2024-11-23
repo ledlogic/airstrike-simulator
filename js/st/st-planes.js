@@ -13,6 +13,8 @@ st.planes = {
 			armour: 6,
 			weapons: [
 				{
+					"type": "gun",
+					"armament": "MG-131",
 					"arc": "f",
 					"d": 6,
 					"ap": "S"
@@ -28,6 +30,8 @@ st.planes = {
 			armour: 4,
 			weapons: [
 				{
+					"type": "gun",
+					"armament": "30mm",
 					"arc": "f",
 					"d": 7,
 					"ap": "S"
@@ -43,6 +47,8 @@ st.planes = {
 			armour: 4,
 			weapons: [
 				{
+					"type": "gun",
+					"armament": "ShKAS",
 					"arc": "t",
 					"d": 3,
 					"ap": "S"
@@ -139,47 +145,6 @@ st.planes = {
 			brightnessDelta: 0
 		};
 		return plane;
-	},
-
-	/**
-	 * Update the target for all planes
-	 * All planes work independently
-	 **/
-	updateTargets: function() {
-		var planes = st.planes.planes;
-		for (var i = 0; i < planes.length; i++) {
-			var plane = planes[i];
-			var target = plane.target;
-			var lastTarget = -1;
-
-			if (target > -1) {
-				if (planes[target].structure <= 0) {
-					plane.target = -1;	
-				} else if (plane.shootDelayed > 5) {
-					lastTarget = target;	
-					plane.target = -1;
-					plane.shootDelayed = 0;
-				}
-			}
-
-			if (plane.target == -1) {
-				st.planes.updateTarget(i, lastTarget);
-			}
-		}
-	},
-
-	/**
-	 * Update the target for plane index
-	 **/
-	updateTarget: function(index, lastTarget) {
-		var planes = st.planes.planes;
-		var indexPlane = planes[index];
-		var distArr = st.planes.getTargetDistances(index, lastTarget);
-		var minDistIndex = st.planes.minArrDistance(distArr);
-		indexPlane.target = minDistIndex;
-		if (lastTarget != -1) {
-			console.log([lastTarget,minDistIndex]);
-		}
 	},
 
 	minArrDistance: function(distArr) {
@@ -279,7 +244,9 @@ st.planes = {
 		st.log("plane.shootDelayed[" + plane.shootDelayed + "]");
 		
 		_.each(weapons, function(weapon) {
+			var dist = st.planes.calcPlaneDistance(plane, targetPlane);
 			var canHit = (weapon.arc == "t") || (weapon.arc == "f" && Math.abs(plane.targetA - plane.a) < 20);
+			canHit = canHit && dist < st.planes.getWeaponDist(weapon);
 			if (canHit) {
 				var effect = 0;
 				var d1 = st.math.die(weapon.d, 6, effect);
@@ -298,7 +265,24 @@ st.planes = {
 		});
 	},
 	
-	minDistTarget: function(plane) {
-		return 35000;
+	getAllWeaponDist: function(plane) {
+		var dmin = 1e9;
+		var weapons = plane.weapons;
+		_.each(weapons, function(weapon) {
+			var d = st.planes.getWeaponDist(weapon);
+			dmin = Math.min(dmin, d);
+		});
+		return dmin;
+	},
+	
+	getWeaponDist: function(weapon) {
+		switch (weapon.armament) {
+			case "MG-131":
+				return 6500;
+			case "ShKAS":
+				return 400;
+			default: 
+				return 1828;
+		}
 	}
 };

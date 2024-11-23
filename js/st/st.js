@@ -23,6 +23,8 @@ var st = {
 		st.math.init();
 		st.render.init();
 		st.clouds.init();
+		st.time.init();
+
 		st.render.render();
 	},
 	
