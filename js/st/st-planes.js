@@ -58,7 +58,47 @@ st.planes = {
 				}
 			],
 			smoke: true
+		},
+		"he-177": {
+			type: "tl6-bomber",
+			v: MAX_TO_CRUISE * 488 * KPH_TO_MPM,
+			minv: MAX_TO_CRUISE * 135 * KPH_TO_MPM,
+			hull: 32,
+			structure: 32,
+			armour: 6,
+			weapons: [
+				{
+					"type": "gun",
+					"armament": "MG-151",
+					"arc": "f",
+					"d": 6,
+					"ap": "S"
+				},
+				{
+					"type": "gun",
+					"armament": "MG-151",
+					"arc": "a",
+					"d": 6,
+					"ap": "S"
+				},
+				{
+					"type": "gun",
+					"armament": "MG-131",
+					"arc": "t",
+					"d": 5,
+					"ap": "S"
+				},
+				{
+					"type": "gun",
+					"armament": "MG-131",
+					"arc": "t",
+					"d": 5,
+					"ap": "S"
+				}
+			],
+			smoke: true
 		}
+
 	},
 
 	planes: [],
@@ -86,6 +126,12 @@ st.planes = {
 				st.planes.createPlanes("soviet", "po-2", 6);
 				st.planes.createPlanes("german", "me-262", 4);
 				return;
+			case "actiii":
+				st.planes.createPlanes("soviet", "po-2", 12);
+				st.cities.createCity("soviet", "Capital");
+				st.planes.createPlanes("german", "me-262", 4);
+				st.planes.createPlanes("german", "he-177", 2);
+				return;
 			default:
 				st.planes.createPlanes("german", "bf-109", 3);
 				st.planes.createPlanes("soviet", "po-2", 12);
@@ -95,18 +141,19 @@ st.planes = {
 
 	createPlanes: function(team, design, qty, opts) {
 		var full = st.p5.real.full;
-		var spread = 0.5;
+		var hspread = 0.5;
+		var vspread = 0.5;
 		for (var i = 0; i < qty; i++) {
 			if (team == 'german') {
-				var x = st.math.randomBetween(-full, (-1 + spread) * full);
-				var y = st.math.randomBetween(-spread * full, spread * full);
-				var a = st.math.randomBetween(0, 180);
+				var x = st.math.randomBetween(-full, (-1 + hspread) * full);
+				var y = st.math.randomBetween(-vspread * full, vspread * full);
+				var a = st.math.randomBetween(10, 170);
 				var homeAngle = 260.0;
 			}
 			if (team == 'soviet') {
-				var x = st.math.randomBetween(spread * full, full);
-				var y = st.math.randomBetween(-spread * full, spread * full);
-				var a = st.math.randomBetween(180, 360);
+				var x = st.math.randomBetween((1 - hspread) * full, full);
+				var y = st.math.randomBetween(-vspread * full, vspread * full);
+				var a = st.math.randomBetween(190, 350);
 				var homeAngle = 100.0;
 			}			
 			if (opts != null) {
@@ -122,6 +169,7 @@ st.planes = {
 			var index = st.planes.planes.length;
 			plane.index = index;
 			st.planes.planes[index] = plane;
+			st.log([design, plane]);
 		}
 	},
 

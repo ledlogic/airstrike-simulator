@@ -231,6 +231,63 @@ st.p5 = {
 					
 						break;
 
+					case "tl6-bomber":
+						// tail
+						var winga = canvasa + 155.0;
+						var wingb = canvasa - 155.0;
+						var x1 = x + r * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+						var x2 = x + r * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						strokeWeight(1.8);
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						// engine 
+						var sweep = 20.0;
+						var winga = canvasa + 90 - sweep;
+						var wingb = canvasa + 90 + 2 * sweep;
+						var x1 = x + r * 0.45 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.45 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+
+						var x2 = x + r * 0.45 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.45 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+						
+						var winga = canvasa - 90 - 2*sweep;
+						var wingb = canvasa - 90 + sweep;
+						var x1 = x + r * 0.45 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.45 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+
+						var x2 = x + r * 0.45 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.45 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+
+						// wing
+						var winga = canvasa + 85.0;
+						var wingb = canvasa - 85.0;
+						var x1 = x + r * 0.9 * Math.cos(winga / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - r * 0.9 * Math.sin(winga / 180.0 * Math.PI) + shadowPt.y;
+						var x2 = x + r * 0.9 * Math.cos(wingb / 180.0 * Math.PI) + shadowPt.x;
+						var y2 = y - r * 0.9 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
+						strokeWeight(3);
+						stroke(wingColorStr);
+						line(x1, y1, x2, y2);
+			
+						// fuselage
+						var x1 = x + 0.75 * r * Math.cos(canvasa / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - 0.75 * r * Math.sin(canvasa / 180.0 * Math.PI) + shadowPt.y;
+						var fx2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.x;
+						var fy2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.y;
+						fill(0, 0, 0, 0);
+						strokeWeight(0.3 * r);
+						stroke(fuselageColorStr);
+						line(x1, y1, fx2, fy2);
+					
+						break;
+
 					case "tl6-propfighter": 
 						// tail
 						var winga = canvasa + 155.0;
@@ -316,7 +373,7 @@ st.p5 = {
 						var y2 = y - r * 0.45 * Math.sin(wingb / 180.0 * Math.PI) + shadowPt.y;
 						stroke(wingColorStr);
 						line(x1, y1, x2, y2);
-
+						
 						// wing 
 						var sweep = 105.0;
 						var winga = canvasa + sweep;
@@ -361,7 +418,7 @@ st.p5 = {
 				if (opts.detail) {
 					fill(fuselageColor);
 					textFont(st.p5.font);
-					var t = "p" + i;
+					var t = "p" + i + " (" + plane.design + ")";
 					text(t, x - 8, y + 24);
 	
 	 				var t = " (" + Math.round(plane.x) + "m, " + Math.round(plane.y) + "m, " + Math.round(a) + "°)";
@@ -385,7 +442,7 @@ st.p5 = {
 				}			
 				
 				// weapon radius
-				if (mode != "shadow") {
+				if (mode != "shadow" && plane.target != -1) {
 					var dist = st.planes.getAllWeaponDist(plane);	
 					var adelta = 10;
 					
@@ -462,6 +519,28 @@ st.p5 = {
 				circle(xb, yb, 4);
 			}
 		}		
+	},
+	
+	drawCities: function() {
+		var ratio = st.p5.real.ratio;
+		var cities = st.cities.cities;
+		for (var i = 0; i < cities.length; i++) {
+			var city = cities[i];
+			var team = city.team;
+			var fuselageColor = st.teams.getTeamColor(team);
+			
+			var xc = city.x / ratio;
+			var yc = -city.y / ratio;
+			
+			fill(fuselageColor);
+			stroke(0, 0, 0, 0);
+			circle(xc, yc, 20);
+
+			fill(fuselageColor);
+			textFont(st.p5.font);
+			var t = city.name;
+			text(t, xc - 20, yc + 24);					
+		}
 	}
 };
 
@@ -474,6 +553,7 @@ function setup() {
 function draw() {
 	st.time.updateTime();
 	st.p5.drawBackground();
+	st.p5.drawCities();
 	st.p5.drawGrid();
 	st.p5.drawClouds();
 	st.p5.drawPlanes({mode:"shadow", detail: true});

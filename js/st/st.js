@@ -49,6 +49,9 @@ var st = {
 		$(".st-act-ii").on("click", function() {
 			window.location.replace("?simulation=actii");
 		});
+		$(".st-act-iii").on("click", function() {
+			window.location.replace("?simulation=actiii");
+		});
 	}
 };
 
