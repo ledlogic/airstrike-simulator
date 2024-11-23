@@ -11,13 +11,16 @@ st.bullets = {
 	init: function() {
 	},
 
-	createBullet: function(x, y, a) {
+	createBullet: function(x, y, a, cnt) {
 		var bullet  =  {
 			x: x,
 			y: y,
 			a: a,
 			v: st.bullets.v,
-			active: true
+			distance: 0,
+			cnt: cnt,
+			active: true,
+			range: 2500
 		};
 		st.bullets.bullets.push(bullet);
 		return bullet;		

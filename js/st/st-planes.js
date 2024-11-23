@@ -107,17 +107,36 @@ st.planes = {
 			armour: 4,
 			weapons: [
 				{
-					"type": "missle",
+					"type": "missile",
 					"armament": "R-40",
 					"arc": "f",
 					"d": 9,
-					"ap": "S"
+					"ap": "S",
+					"range": 65000 
 				}
 			],
 			smoke: false
 		},
-
-
+		"r-40": {
+			type: "tl7-missile",
+			v: MAX_TO_CRUISE * 4100 * KPH_TO_MPM,
+			minv: MAX_TO_CRUISE * 2050 * KPH_TO_MPM,
+			hull: 1,
+			structure: 1,
+			armour: 0,
+			range: 65000,
+			weapons: [
+				{
+					"type": "gun",
+					"armament": "R-40",
+					"arc": "t",
+					"d": 9,
+					"ap": "S",
+					"range": 200
+				}
+			],
+			smoke: false
+		}
 	},
 
 	planes: [],
@@ -148,8 +167,9 @@ st.planes = {
 			case "actiii":
 				st.planes.createPlanes("soviet", "po-2", 6);
 				st.planes.createPlanes("soviet", "mig-25", 6);
+				st.planes.createPlanes("soviet", "r-40", 4);
 				st.cities.createCity("soviet", "Capital");
-				st.planes.createPlanes("german", "me-262", 4);
+				st.planes.createPlanes("german", "me-262", 6);
 				st.planes.createPlanes("german", "he-177", 2);
 				return;
 			default:
@@ -205,6 +225,7 @@ st.planes = {
 			y: y,
 			a: a,
 			homeAngle: homeAngle,
+			distance: 0,
 			v: data.v,
 			target: -1,
 			targetA: -1,
@@ -242,6 +263,8 @@ st.planes = {
 			if ((i == index) || (i == lastTarget)) {
 				d[i] = 1e21;
 			} else if (st.planes.sameTeam(index, i)) {
+				d[i] = 1e21;
+			} else if (targetPlane.type == "missile") {
 				d[i] = 1e21;
 			} else if (targetPlane.structure <= 0) {
 				d[i] = 1e21;
@@ -324,10 +347,20 @@ st.planes = {
 			if (canHit) {
 				plane.shootDelayed = 0;
 				
-				var x = plane.x;
-				var y = plane.y;
-				var a = plane.a;
-				st.bullets.createBullet(x, y, a);
+				if (plane.type == "tl7-missile") {
+					var missleBulletDelta = 60;
+					for (var ai=0; ai<360; ai+=missleBulletDelta) {
+						var x = plane.x;
+						var y = plane.y;
+						var a = plane.a + ai + st.math.dieN(missleBulletDelta);
+						st.bullets.createBullet(x, y, a, 1);
+					}
+				} else {	
+					var x = plane.x;
+					var y = plane.y;
+					var a = plane.a;
+					st.bullets.createBullet(x, y, a, 5);
+				}
 				
 				var effect = 0;
 				var d1 = st.math.die(weapon.d, 6, effect);
@@ -341,6 +374,11 @@ st.planes = {
 				if (d2>0 && targetPlane.structure > 0) {
 					var dStructure = Math.min(d2, targetPlane.structure);
 					targetPlane.structure = targetPlane.structure - dStructure;
+				}
+				
+				if (plane.type == "missile") {
+					plane.hull = 0;
+					plane.structure = 0;
 				}
 			}
 		});
@@ -362,6 +400,8 @@ st.planes = {
 				return 6500;
 			case "ShKAS":
 				return 400;
+			case "R-40":
+				return 13;
 			default: 
 				return 1828;
 		}

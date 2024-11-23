@@ -117,6 +117,23 @@ st.time = {
 				x += mc * v * st.p5.time.delta / scale;
 				y += ms * v * st.p5.time.delta / scale;
 				
+				var dist = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+				plane.distance += dist;
+				if (plane.distance > plane.range) {
+					plane.hull = 0;
+					plane.structure = 0;
+				}
+				
+				if (plane.target > -1) {
+					var targetPlane = planes[plane.target];					
+					var targetDist = st.planes.calcPlaneDistance(plane, targetPlane);
+					if (dist >= targetDist) {
+						x = targetPlane.x;
+						y = targetPlane.y;
+					}
+					st.planes.shoot(plane);
+				}
+				
 				plane.x = x;
 				plane.y = y;
 			}
@@ -144,6 +161,12 @@ st.time = {
 				
 				var deltaX = mc * v * st.p5.time.delta / scale;
 				var deltaY = ms * v * st.p5.time.delta / scale;
+				
+				var dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+				bullet.distance += dist;
+				if (bullet.distance > bullet.range) {
+					bullet.active = false;
+				}
 	
 				x += deltaX;
 				y += deltaY;

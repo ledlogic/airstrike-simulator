@@ -185,7 +185,6 @@ st.p5 = {
 					r = 5;
 				}
 
-				// wing
 				switch (plane.type) {
 					case "tl5-biplane":
 						// tail
@@ -489,6 +488,19 @@ st.p5 = {
 						line(x1, y1, fx2, fy2);
 					
 						break;
+
+					case "tl7-missile":
+						// fuselage
+						var x1 = x + 0.75 * r * Math.cos(canvasa / 180.0 * Math.PI) + shadowPt.x;
+						var y1 = y - 0.75 * r * Math.sin(canvasa / 180.0 * Math.PI) + shadowPt.y;
+						var fx2 = x + r * Math.cos((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.x;
+						var fy2 = y - r * Math.sin((canvasa + 180.0) / 180.0 * Math.PI) + shadowPt.y;
+						fill(0, 0, 0, 0);
+						strokeWeight(0.3 * r);
+						stroke(fuselageColorStr);
+						line(x1, y1, fx2, fy2);
+
+						break;
 				}
 				
 				// detail
@@ -580,7 +592,7 @@ st.p5 = {
 			var x = bullet.x;
 			var y = bullet.y;
 			var a = bullet.a;
-			var v = bullet.v / 5;
+			var v = bullet.v / 2.5;
 			
 			// convert from geographic
 			var canvasa = 90.0 - a;
@@ -589,7 +601,7 @@ st.p5 = {
 			var ms = Math.sin(canvasa / 180.0 * Math.PI);
 
 			stroke(0,0,0,0);
-			for (var b = 0; b< 5; b++) {
+			for (var b = 0; b < bullet.cnt; b++) {
 				var xb = (x + b * mc * v * st.p5.time.delta / scale) / ratio;
 				var yb = (-y - b * ms * v * st.p5.time.delta / scale) / ratio;
 				fill(58,52,32,255);
