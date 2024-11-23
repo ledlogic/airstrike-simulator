@@ -251,15 +251,20 @@ st.planes = {
 		
 		_.each(weapons, function(weapon) {
 			var dist = st.planes.calcPlaneDistance(plane, targetPlane);
-			var canHit = (weapon.arc == "t") || (weapon.arc == "f" && Math.abs(plane.targetA - plane.a) < 20);
+			var canHit = (weapon.arc == "t") || (weapon.arc == "f" && Math.abs(plane.targetA - plane.a) < MAX_SHOOT_BULLET_DELTA_ANGLE);
 			canHit = canHit && dist < st.planes.getWeaponDist(weapon);
 			if (canHit) {
 				plane.shootDelayed = 0;
 				
+				var x = plane.x;
+				var y = plane.y;
+				var a = plane.a;
+				st.bullets.createBullet(x, y, a);
+				
 				var effect = 0;
 				var d1 = st.math.die(weapon.d, 6, effect);
 				d2 = Math.max(0, d1-targetPlane.armour);
-				
+								
 				if (d2>0 && targetPlane.hull > 0) {
 					var dHull = Math.min(d2, targetPlane.hull);
 					targetPlane.hull = targetPlane.hull - dHull;

@@ -26,6 +26,7 @@ st.time = {
 			st.time.updateTargets();
 			st.time.updateAngles();
 			st.time.updatePositions();
+			st.time.updateBullets();
 			
 			// clouds
 			st.time.updateClouds();
@@ -120,6 +121,54 @@ st.time = {
 				plane.y = y;
 			}
 		}
+	},
+	
+	updateBullets: function() {
+		var bullets = st.bullets.bullets;
+		var scale = st.p5.time.scale;
+		var overflow = st.p5.real.full * 1.1;
+		var newBullets = [];
+		for (var i = 0; i < bullets.length; i++) {
+			var bullet = bullets[i];
+			if (bullet.active) {
+				var x = bullet.x;
+				var y = bullet.y;
+				var a = bullet.a;
+				var v = bullet.v / 5;
+			
+				// convert from geographic
+				var canvasa = 90.0 - a;
+	
+				var mc = Math.cos(canvasa / 180.0 * Math.PI);
+				var ms = Math.sin(canvasa / 180.0 * Math.PI);
+				
+				var deltaX = mc * v * st.p5.time.delta / scale;
+				var deltaY = ms * v * st.p5.time.delta / scale;
+	
+				x += deltaX;
+				y += deltaY;
+				
+				bullet.x = x;
+				bullet.y = y;
+				
+				if (bullet.x < -overflow) {
+					bullet.active = false;
+				}
+				if (bullet.x > overflow) {
+					bullet.active = false;
+				}
+				if (bullet.y < -overflow) {
+					bullet.active = false;
+				}
+				if (bullet.y > overflow) {
+					bullet.active = false;
+				}
+			}
+			if (bullet.active) {
+				newBullets.push(bullet);
+			}
+		}
+		st.bullets.bullets = newBullets;
 	},
 	
 	updateSmokes: function() {

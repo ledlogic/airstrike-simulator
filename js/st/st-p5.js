@@ -434,6 +434,34 @@ st.p5 = {
 				}
 			}
 		}
+	},
+	
+	drawBullets: function() {
+		var ratio = st.p5.real.ratio;
+		var bullets = st.bullets.bullets;
+		var scale = st.p5.time.scale;
+
+		for (var i = 0; i < bullets.length; i++) {
+			var bullet = bullets[i];
+			var x = bullet.x;
+			var y = bullet.y;
+			var a = bullet.a;
+			var v = bullet.v / 5;
+			
+			// convert from geographic
+			var canvasa = 90.0 - a;
+
+			var mc = Math.cos(canvasa / 180.0 * Math.PI);
+			var ms = Math.sin(canvasa / 180.0 * Math.PI);
+
+			stroke(0,0,0,0);
+			fill(58,52,32,255);
+			for (var b = 0; b< 5; b++) {
+				var xb = (x + b * mc * v * st.p5.time.delta / scale) / ratio;
+				var yb = (-y + b * ms * v * st.p5.time.delta / scale) / ratio;
+				circle(xb, yb, 4);
+			}
+		}		
 	}
 };
 
@@ -451,6 +479,7 @@ function draw() {
 	st.p5.drawPlanes({mode:"shadow", detail: true});
 	st.p5.drawSmoke();
 	st.p5.drawPlanes({mode:"normal"});
+	st.p5.drawBullets();
 }
 
 function preload() {
