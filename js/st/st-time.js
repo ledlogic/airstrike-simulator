@@ -64,11 +64,26 @@ st.time = {
 			dA = 180 - dA;
 		}
 		var deltaA = 0;
+		var turnA = 3;
+		var deltaV = plane.data.v * 0.1;
+		var turnRatio = (plane.data.minv / plane.v);
+		var turnFactor = 2.0;
 		if (dA > 0) {
-			deltaA = Math.min(dA, 3);
+			deltaA = Math.min(dA, turnFactor * turnA * turnRatio);
+			if (dA > 3) {
+				plane.v -= deltaV;
+				plane.v = Math.max(plane.v, plane.data.minv);
+			}
 		}
-		if (dA < 0) {
-			deltaA = Math.max(dA, -3);
+		else if (dA < 0) {
+			deltaA = Math.max(dA, -turnFactor * turnA * turnRatio);
+			if (dA > 3) {
+				plane.v -= deltaV;
+				plane.v = Math.max(plane.v, plane.data.minv);
+			}
+		} else {
+			plane.v += deltaV;
+			plane.v = Math.min(plane.v, plane.data.v);
 		}
 		plane.a += deltaA;
 		
@@ -77,7 +92,7 @@ st.time = {
 		}
 		while (plane.a < 0.0) {
 			plane.a += 360.0;
-		}		
+		}
 	},
 	
 	updatePositions: function() {
@@ -211,7 +226,6 @@ st.time = {
 					plane.shootDelayed = 0;
 				}
 			}
-
 			if (plane.target == -1) {
 				st.time.updateTarget(i, lastTarget);
 			}
@@ -227,9 +241,6 @@ st.time = {
 		var distArr = st.planes.getTargetDistances(index, lastTarget);
 		var minDistIndex = st.planes.minArrDistance(distArr);
 		indexPlane.target = minDistIndex;
-		//if (lastTarget != -1) {
-		//	console.log([lastTarget,minDistIndex]);
-		//}
 	}
 
 };

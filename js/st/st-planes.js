@@ -8,6 +8,7 @@ st.planes = {
 		"bf-109": {
 			type: "tl6-propfighter",
 			v: MAX_TO_CRUISE * 588 * KPH_TO_MPM,
+			minv: MAX_TO_CRUISE * 165 * KPH_TO_MPM,
 			hull: 3,
 			structure: 3,
 			armour: 6,
@@ -25,6 +26,7 @@ st.planes = {
 		"me-262": {
 			type: "tl6-jetfighter",
 			v: MAX_TO_CRUISE * 900 * KPH_TO_MPM,
+			minv: MAX_TO_CRUISE * 250 * KPH_TO_MPM,
 			hull: 3,
 			structure: 8,
 			armour: 4,
@@ -42,6 +44,7 @@ st.planes = {
 		"po-2": {
 			type: "tl5-biplane",
 			v: MAX_TO_CRUISE * 152 * KPH_TO_MPM,
+			minv: MAX_TO_CRUISE * 64 * KPH_TO_MPM,
 			hull: 1,
 			structure: 1,
 			armour: 4,
@@ -116,7 +119,9 @@ st.planes = {
 			}
 		
 			var plane = st.planes.createPlane(team, design, x, y, a, homeAngle);
-			st.planes.planes.push(plane);
+			var index = st.planes.planes.length;
+			plane.index = index;
+			st.planes.planes[index] = plane;
 		}
 	},
 
@@ -124,6 +129,7 @@ st.planes = {
 		var data = st.planes.data[design];
 		
 		var plane = {
+			data: data,
 			team: team,
 			design: design,
 			type: data.type,
@@ -240,7 +246,7 @@ st.planes = {
 		var weapons = plane.weapons;
 		var targetPlane = planes[plane.target];
 		
-		plane.shootDelayed = plane.shootDelayed + 1;
+		plane.shootDelayed++;
 		st.log("plane.shootDelayed[" + plane.shootDelayed + "]");
 		
 		_.each(weapons, function(weapon) {
@@ -248,6 +254,8 @@ st.planes = {
 			var canHit = (weapon.arc == "t") || (weapon.arc == "f" && Math.abs(plane.targetA - plane.a) < 20);
 			canHit = canHit && dist < st.planes.getWeaponDist(weapon);
 			if (canHit) {
+				plane.shootDelayed = 0;
+				
 				var effect = 0;
 				var d1 = st.math.die(weapon.d, 6, effect);
 				d2 = Math.max(0, d1-targetPlane.armour);

@@ -358,13 +358,33 @@ st.p5 = {
 				}
 				
 				// detail
-				fill(fuselageColorStr);
-				textFont(st.p5.font);
-				var t = "p" + i;
-				text(t, x - 8, y + 24);
+				if (opts.detail) {
+					fill(fuselageColor);
+					textFont(st.p5.font);
+					var t = "p" + i;
+					text(t, x - 8, y + 24);
+	
+	 				var t = " (" + Math.round(plane.x) + "m, " + Math.round(plane.y) + "m, " + Math.round(a) + "°)";
+					text(t, x - 8, y + 36);
+		
+	 				var t = " (" + Math.round(plane.v) + "km/h)";
+					text(t, x - 8, y + 48);
+
+					var t = " hull: " + Math.round(plane.hull) + ", structure: " + Math.round(plane.structure);
+					text(t, x - 8, y + 62);
+	
+					if (plane.target != -1) {
+						var t = "-> p" + plane.target + ": " + Math.round(plane.targetDist) + "m";
+						text(t, x - 8, y + 72);
+					}
+				} else {
+					fill(fuselageColor);
+					textFont(st.p5.font);
+					var t = "p" + i;
+					text(t, x - 8, y + 24);					
+				}			
 				
-				// weapon radius - causes plane to disappear.
-				
+				// weapon radius
 				if (mode != "shadow") {
 					var dist = st.planes.getAllWeaponDist(plane);	
 					var adelta = 10;
@@ -390,7 +410,25 @@ st.p5 = {
 						var x2 = x + (dist * Math.cos((canvasa1 - adelta) / 180.0 * Math.PI)) / ratio;
 						var y2 = y - (dist * Math.sin((canvasa1 - adelta) / 180.0 * Math.PI)) / ratio;
 						strokeWeight(1);
-						stroke("orange");
+						switch (plane.shootDelayed) {
+							case 0:
+								stroke("green");
+								break;
+							case 1:
+							case 2:
+								stroke("yellow");
+								break;
+							case 3:
+							case 4:
+								stroke("orange");
+								break;
+							case 5:
+								stroke("red");
+								break;
+							default: 
+								stroke("black");
+								break;
+						}
 						line(x1, y1, x2, y2);
 					}
 				}
@@ -410,7 +448,7 @@ function draw() {
 	st.p5.drawBackground();
 	st.p5.drawGrid();
 	st.p5.drawClouds();
-	st.p5.drawPlanes({mode:"shadow"});
+	st.p5.drawPlanes({mode:"shadow", detail: true});
 	st.p5.drawSmoke();
 	st.p5.drawPlanes({mode:"normal"});
 }
