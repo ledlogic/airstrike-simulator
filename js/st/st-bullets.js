@@ -1,12 +1,14 @@
 /* st-bullets.js */
 
-const MAX_SHOOT_BULLET_DELTA_ANGLE = 10;
+const MAX_SHOOT_BULLET_DELTA_ANGLE = 20;
+const BULLET_V = 3730 * KPH_TO_MPM;
+const EXPLOSION_V = 37.3 * KPH_TO_MPM;
 
 // bullets/shells
 st.bullets = {
 	bullets: [],
 	
-	v: 3730 * KPH_TO_MPM,
+	v: BULLET_V,
 
 	init: function() {
 	},

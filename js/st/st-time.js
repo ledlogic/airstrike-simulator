@@ -1,5 +1,7 @@
 /* st-time.js */
 
+const MAX_SHOOT_DELAYS_BEFORE_NEW_TARGET = 4;
+
 st.time = {
 	init: function() {
 		st.log("init time");
@@ -53,6 +55,7 @@ st.time = {
 				} else {
 					var targetA = plane.homeAngle;
 					st.time.updatePlane(plane, targetA);
+					//plane.v = plane.data.maxv;
 				}
 			}
 		}
@@ -61,6 +64,7 @@ st.time = {
 	updatePlane: function(plane, targetA) {
 		var planeA = plane.a;
 		var dA = (targetA - planeA);
+//		st.log(dA);
 		if (dA > 180) {
 			dA = 180 - dA;
 		}
@@ -75,12 +79,20 @@ st.time = {
 				plane.v -= deltaV;
 				plane.v = Math.max(plane.v, plane.data.minv);
 			}
+			else {
+				plane.v += deltaV;
+				plane.v = Math.min(plane.v, plane.data.v);
+			}
 		}
 		else if (dA < 0) {
 			deltaA = Math.max(dA, -turnFactor * turnA * turnRatio);
-			if (dA > 3) {
+			if (dA < -3) {
 				plane.v -= deltaV;
 				plane.v = Math.max(plane.v, plane.data.minv);
+			}
+			else {
+				plane.v += deltaV;
+				plane.v = Math.min(plane.v, plane.data.v);
 			}
 		} else {
 			plane.v += deltaV;
@@ -90,9 +102,11 @@ st.time = {
 		
 		while (plane.a > 360.0) {
 			plane.a -= 360.0;
+			plane.shootDelayed++;
 		}
 		while (plane.a < 0.0) {
 			plane.a += 360.0;
+			plane.shootDelayed++;
 		}
 	},
 	
@@ -101,7 +115,6 @@ st.time = {
 		var scale = st.p5.time.scale;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
-
 			if (plane.structure > 0) {
 				var x = plane.x;
 				var y = plane.y;
@@ -125,13 +138,15 @@ st.time = {
 				}
 				
 				if (plane.target > -1) {
-					var targetPlane = planes[plane.target];					
-					var targetDist = st.planes.calcPlaneDistance(plane, targetPlane);
-					if (dist >= targetDist) {
-						x = targetPlane.x;
-						y = targetPlane.y;
+					if (plane.type == "tl7-missile") {
+						var targetPlane = planes[plane.target];					
+						var targetDist = st.planes.calcPlaneDistance(plane, targetPlane);
+						if (dist >= targetDist) {
+							x = targetPlane.x;
+							y = targetPlane.y;
+						}
+						st.planes.shoot(plane);
 					}
-					st.planes.shoot(plane);
 				}
 				
 				plane.x = x;
@@ -196,9 +211,7 @@ st.time = {
 	
 	updateSmokes: function() {
 		var smokeDelta = 10;
-		
 		var drift = st.clouds.drift;
-
 		var planes = st.planes.planes;
 		for (var i = 0; i < planes.length; i++) {
 			var plane = planes[i];
@@ -292,7 +305,7 @@ st.time = {
 			if (target > -1) {
 				if (planes[target].structure <= 0) {
 					plane.target = -1;	
-				} else if (plane.shootDelayed > 5) {
+				} else if (plane.shootDelayed > MAX_SHOOT_DELAYS_BEFORE_NEW_TARGET) {
 					lastTarget = target;	
 					plane.target = -1;
 					plane.shootDelayed = 0;

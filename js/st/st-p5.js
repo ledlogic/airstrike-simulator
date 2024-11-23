@@ -601,10 +601,12 @@ st.p5 = {
 			var ms = Math.sin(canvasa / 180.0 * Math.PI);
 
 			stroke(0,0,0,0);
-			for (var b = 0; b < bullet.cnt; b++) {
+			var cnt = st.math.randomBetween(bullet.cnt,bullet.cnt*2);
+			for (var b = 0; b < cnt; b++) {
 				var xb = (x + b * mc * v * st.p5.time.delta / scale) / ratio;
 				var yb = (-y - b * ms * v * st.p5.time.delta / scale) / ratio;
-				fill(58,52,32,255);
+				stroke(0, 0, 0, 0);
+				fill(58,58,58,Math.round(st.math.randomBetween(100,225)));
 				circle(xb, yb, 4);
 			}
 		}		

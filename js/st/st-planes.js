@@ -12,6 +12,7 @@ st.planes = {
 			hull: 3,
 			structure: 3,
 			armour: 6,
+			range: 1e9,
 			weapons: [
 				{
 					"type": "gun",
@@ -30,6 +31,7 @@ st.planes = {
 			hull: 3,
 			structure: 8,
 			armour: 4,
+			range: 1e9,
 			weapons: [
 				{
 					"type": "gun",
@@ -48,6 +50,7 @@ st.planes = {
 			hull: 1,
 			structure: 1,
 			armour: 4,
+			range: 1e9,
 			weapons: [
 				{
 					"type": "gun",
@@ -66,6 +69,7 @@ st.planes = {
 			hull: 32,
 			structure: 32,
 			armour: 6,
+			range: 1e9,
 			weapons: [
 				{
 					"type": "gun",
@@ -105,6 +109,7 @@ st.planes = {
 			hull: 20,
 			structure: 20,
 			armour: 4,
+			range: 1e9,
 			weapons: [
 				{
 					"type": "missile",
@@ -338,7 +343,7 @@ st.planes = {
 		var targetPlane = planes[plane.target];
 		
 		plane.shootDelayed++;
-		st.log("plane.shootDelayed[" + plane.shootDelayed + "]");
+		//st.log("plane.shootDelayed[" + plane.shootDelayed + "]");
 		
 		_.each(weapons, function(weapon) {
 			var dist = st.planes.calcPlaneDistance(plane, targetPlane);
@@ -374,6 +379,18 @@ st.planes = {
 				if (d2>0 && targetPlane.structure > 0) {
 					var dStructure = Math.min(d2, targetPlane.structure);
 					targetPlane.structure = targetPlane.structure - dStructure;
+				}
+				
+				if (targetPlane.structure <= 0) {
+					var explosionBulletDelta = 20;
+					for (var ai=0; ai<360; ai+=explosionBulletDelta) {
+						var r = targetPlane.r;
+						var x = targetPlane.x + st.math.randomBetween(-r, r);
+						var y = targetPlane.y + st.math.randomBetween(-r, r);
+						var a = targetPlane.a + ai + st.math.dieN(explosionBulletDelta);
+						var bullet = st.bullets.createBullet(x, y, a, 1);
+						bullet.v = EXPLOSION_V;						
+					}
 				}
 				
 				if (plane.type == "missile") {
