@@ -2,7 +2,7 @@
 
 st.math = {
 	init: function() {
-		st.log("init math");
+		st.log("st.math.init");
 	},
 	die : function(qty, die, mod) {
 		var ret = mod;

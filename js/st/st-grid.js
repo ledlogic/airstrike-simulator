@@ -5,6 +5,7 @@ st.grid = {
 	
 	init: function() {
 		st.log("st.grid.init");
+
 		$("#st-cb-grid").attr("checked", st.grid.visible ? "checked" : "");
 	}
 };

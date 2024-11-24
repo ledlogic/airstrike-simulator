@@ -4,7 +4,7 @@ const MAX_SHOOT_DELAYS_BEFORE_NEW_TARGET = 4;
 
 st.time = {
 	init: function() {
-		st.log("init time");
+		st.log("st.time.init");
 	},
 
 	updateTime: function() {

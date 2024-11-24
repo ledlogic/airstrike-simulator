@@ -20,6 +20,8 @@ st.p5 = {
 	},
 
 	init: function() {
+		st.log("st.p5.init");
+
 		var w = window.innerWidth;
 		var h = window.innerHeight;
 
