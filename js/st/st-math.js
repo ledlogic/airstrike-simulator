@@ -23,6 +23,14 @@ st.math = {
 		ret = Math.min(max, ret);
 		return ret;
 	},
+	average: function(f1, f2) {
+		return 0.5 * (f1 + f2);
+	},
+	ratioAverage: function(f1, f2, r) {
+		var low = Math.min(f1, f2);
+		var high = Math.max(f1, f2);
+		return r * low + (1.0 - r) * high;
+	},
 	averageUp: function() {
 		var tot = 0;
 		var len = arguments.length;

@@ -97,48 +97,6 @@ st.p5 = {
 		line(x1, y1, x2, y2);
 	},
 
-	drawClouds: function() {
-		var ratio = st.p5.real.ratio;
-		var clouds = st.clouds.clouds;
-
-		for (var i = 0; i < clouds.length; i++) {
-			var cloud = clouds[i];
-			
-			// draw points		
-			var points = cloud.points;
-			for (var j = 0; j < points.length; j++) {
-				var point = points[j];
-				
-				var x1 = (cloud.x + point.x) / ratio;
-				var y1 = -(cloud.y + point.y) / ratio;
-				var r1 = point.r / ratio;
-				var a1 = point.a;
-				
-				stroke(0,0,0,0);
-				fill(255,255,255,a1);
-				circle(x1, y1, r1);
-			}
-		}
-	},
-
-	drawSmoke: function() {
-		var ratio = st.p5.real.ratio;
-		var planes = st.planes.planes;
-		for (var i = 0; i < planes.length; i++) {
-			var plane = planes[i];
-			var smokes = plane.smokes;
-			for (var j = 0; j < smokes.length; j++) {
-				var smoke = smokes[j];
-				var x = smoke.x / ratio;
-				var y = -smoke.y / ratio;
-				var a = smoke.a;
-				stroke(0,0,0,0);
-				fill(0,0,0,a);
-				circle(x, y, 5);
-			}
-		}
-	},
-
 	drawPlanes: function(opts) {
 		var ratio = st.p5.real.ratio;
 		var planes = st.planes.planes;
@@ -582,36 +540,6 @@ st.p5 = {
 		}
 	},
 	
-	drawBullets: function() {
-		var ratio = st.p5.real.ratio;
-		var bullets = st.bullets.bullets;
-		var scale = st.p5.time.scale;
-
-		for (var i = 0; i < bullets.length; i++) {
-			var bullet = bullets[i];
-			var x = bullet.x;
-			var y = bullet.y;
-			var a = bullet.a;
-			var v = bullet.v / 2.5;
-			
-			// convert from geographic
-			var canvasa = 90.0 - a;
-
-			var mc = Math.cos(canvasa / 180.0 * Math.PI);
-			var ms = Math.sin(canvasa / 180.0 * Math.PI);
-
-			stroke(0,0,0,0);
-			var cnt = st.math.randomBetween(bullet.cnt,bullet.cnt*2);
-			for (var b = 0; b < cnt; b++) {
-				var xb = (x + b * mc * v * st.p5.time.delta / scale) / ratio;
-				var yb = (-y - b * ms * v * st.p5.time.delta / scale) / ratio;
-				stroke(0, 0, 0, 0);
-				fill(120,120,120,Math.round(st.math.randomBetween(200,255)));
-				circle(xb, yb, 4);
-			}
-		}		
-	},
-	
 	drawCities: function() {
 		var ratio = st.p5.real.ratio;
 		var cities = st.cities.cities;
@@ -648,7 +576,7 @@ function draw() {
 	st.p5.drawGrid();
 	st.p5.drawClouds();
 	st.p5.drawPlanes({mode:"shadow", detail: true});
-	st.p5.drawSmoke();
+	st.p5.drawSmokes();
 	st.p5.drawPlanes({mode:"normal"});
 	st.p5.drawBullets();
 }

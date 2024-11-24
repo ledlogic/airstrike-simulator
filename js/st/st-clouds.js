@@ -98,3 +98,78 @@ st.clouds = {
 		return points;
 	}
 };
+
+st.p5.drawClouds = function() {
+	var ratio = st.p5.real.ratio;
+	var clouds = st.clouds.clouds;
+
+	for (var i = 0; i < clouds.length; i++) {
+		var cloud = clouds[i];
+		
+		// draw points		
+		var points = cloud.points;
+		for (var j = 0; j < points.length; j++) {
+			var point = points[j];
+			
+			var x1 = (cloud.x + point.x) / ratio;
+			var y1 = -(cloud.y + point.y) / ratio;
+			var r1 = point.r / ratio;
+			var a1 = point.a;
+			
+			stroke(0,0,0,0);
+			fill(255,255,255,a1);
+			circle(x1, y1, r1);
+		}
+	}
+};
+
+st.time.updateClouds = function() {
+	var clouds = st.clouds.clouds;
+	for (var i = 0; i < clouds.length; i++) {
+		var cloud = clouds[i];
+		st.time.updateCloud(cloud);
+		st.time.updateCloudPoints(cloud);
+	}
+};
+
+st.time.updateCloud = function(cloud) {
+	var drift = st.clouds.drift;
+	var overflow = st.p5.real.full * 1.1;
+
+	cloud.x += drift.x + cloud.drift.x;
+	cloud.y += drift.y + cloud.drift.y;
+
+	var reset = false;
+	if (cloud.x < -overflow) {
+		cloud.x = overflow;
+		reset = true;
+	}
+	if (cloud.x > overflow) {
+		cloud.x = -overflow;
+		reset = true;
+	}
+	if (cloud.y < -overflow) {
+		cloud.y = overflow;
+		reset = true;
+	}
+	if (cloud.y > overflow) {
+		cloud.y = -overflow;
+		reset = true;
+	}
+	if (reset) {
+		var points = st.clouds.createPoints(cloud);
+		cloud.points = points;
+	}
+};
+
+st.time.updateCloudPoints = function(cloud) {
+	var points = cloud.points;
+	for (var j = 0; j < points.length; j++) {
+		var point = points[j];
+		point.x += point.vx + st.math.randomBetween(-0.1, 0.1);
+		point.y += point.vy + st.math.randomBetween(-0.1, 0.1);
+		point.r += st.math.randomBetween(-0.1, 0.1);
+		point.r = Math.max(point.r, st.clouds.MIN_POINT_RADIUS);
+	}
+};
+

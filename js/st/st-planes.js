@@ -164,10 +164,13 @@ st.planes = {
 			case "acti":
 				st.planes.createPlanes("soviet", "po-2", 12);
 				st.planes.createPlanes("german", "bf-109", 3);
+				st.cities.createCity("soviet", "Capital");
 				return;
 			case "actii":
-				st.planes.createPlanes("soviet", "po-2", 6);
-				st.planes.createPlanes("german", "me-262", 4);
+				st.planes.createPlanes("soviet", "po-2", 12);
+				st.planes.createPlanes("german", "bf-109", 6);
+				st.planes.createPlanes("german", "he-177", 2);
+				st.cities.createCity("soviet", "Capital");
 				return;
 			case "actiii":
 				st.planes.createPlanes("soviet", "po-2", 6);
@@ -388,16 +391,13 @@ st.planes = {
 						var x = targetPlane.x + st.math.randomBetween(-r, r);
 						var y = targetPlane.y + st.math.randomBetween(-r, r);
 						var a = targetPlane.a + 0.5 * ai + st.math.dieN(explosionBulletDelta);
-						
 						while (a > 360) {
 							a-= 360;
 						} 
 						while (a < 360) {
 							a+= 360;
 						}
-						
-						var bullet = st.bullets.createBullet(x, y, a, 1);
-						bullet.v = EXPLOSION_V;						
+						st.bullets.createExplosion(x, y, a, 1);	
 					}
 				}
 				
@@ -429,6 +429,163 @@ st.planes = {
 				return 13;
 			default: 
 				return 1828;
+		}
+	}
+};
+
+st.time.updatePlanes = function() {
+	st.time.updateTargets();
+	st.time.updateAngles();
+	st.time.updatePositions();
+};
+	
+st.time.updateTargets = function() {
+	var planes = st.planes.planes;
+	for (var i = 0; i < planes.length; i++) {
+		var plane = planes[i];
+		var target = plane.target;
+		var lastTarget = -1;
+
+		if (target > -1) {
+			if (planes[target].structure <= 0) {
+				plane.target = -1;	
+			} else if (plane.shootDelayed > MAX_SHOOT_DELAYS_BEFORE_NEW_TARGET) {
+				lastTarget = target;	
+				plane.target = -1;
+				plane.shootDelayed = 0;
+			}
+		}
+		if (plane.target == -1) {
+			st.time.updateTarget(i, lastTarget);
+		}
+	}
+};
+
+st.time.updateTarget = function(index, lastTarget) {
+	var planes = st.planes.planes;
+	var indexPlane = planes[index];
+	var distArr = st.planes.getTargetDistances(index, lastTarget);
+	var minDistIndex = st.planes.minArrDistance(distArr);
+	indexPlane.target = minDistIndex;
+}
+
+st.time.updateAngles = function() {
+	var planes = st.planes.planes;
+	for (var i = 0; i < planes.length; i++) {
+		var plane = planes[i];
+		if (plane.structure > 0) {
+			if (plane.target > -1 && i != plane.target && planes[plane.target].structure > 0) {
+				var dist = st.planes.calcIndexDistance(i, plane.target) * st.p5.time.delta;
+				plane.targetDist = dist;
+				
+				// if in range, shoot
+				if (dist < st.planes.getAllWeaponDist(plane)) {
+					st.planes.shoot(plane);
+				}
+				var targetA = st.planes.calcIndexAngle(i, plane.target);
+				plane.targetA = targetA;
+				st.time.updateAngle(plane, targetA);
+			} else {
+				var targetA = plane.homeAngle;
+				st.time.updateAngle(plane, targetA);
+			}
+		}
+	}
+};
+	
+st.time.updateAngle = function(plane, targetA) {
+	var planeA = plane.a;
+	var dA = (targetA - planeA);
+	if (dA > 180) {
+		dA = 180 - dA;
+	}
+	var deltaA = 0;
+	var turnA = 3;
+	var deltaV = plane.data.v * 0.1;
+	var turnRatio = (plane.data.minv / plane.v);
+	var turnFactor = 2.0;
+	if (dA > 0) {
+		deltaA = Math.min(dA, turnFactor * turnA * turnRatio);
+		if (dA > 3) {
+			plane.v -= deltaV;
+			plane.v = Math.max(plane.v, plane.data.minv);
+		}
+		else {
+			plane.v += deltaV;
+			plane.v = Math.min(plane.v, plane.data.v);
+		}
+	}
+	else if (dA < 0) {
+		deltaA = Math.max(dA, -turnFactor * turnA * turnRatio);
+		if (dA < -3) {
+			plane.v -= deltaV;
+			plane.v = Math.max(plane.v, plane.data.minv);
+		}
+		else {
+			plane.v += deltaV;
+			plane.v = Math.min(plane.v, plane.data.v);
+		}
+	} else {
+		plane.v += deltaV;
+		plane.v = Math.min(plane.v, plane.data.v);
+	}
+	plane.a += deltaA;
+	
+	while (plane.a > 360.0) {
+		plane.a -= 360.0;
+		plane.shootDelayed++;
+	}
+	while (plane.a < 0.0) {
+		plane.a += 360.0;
+		plane.shootDelayed++;
+	}
+};
+	
+st.time.updatePositions = function() {
+	var planes = st.planes.planes;
+	var scale = st.p5.time.scale;
+	var drift = st.clouds.drift;
+	for (var i = 0; i < planes.length; i++) {
+		var plane = planes[i];
+		if (plane.structure > 0) {
+			var x = plane.x;
+			var y = plane.y;
+			var a = plane.a;
+			var v = plane.v;
+			
+			// convert from geographic
+			var canvasa = 90.0 - a;
+
+			var mc = Math.cos(canvasa / 180.0 * Math.PI);
+			var ms = Math.sin(canvasa / 180.0 * Math.PI);
+
+			x += mc * v * st.p5.time.delta / scale;
+			y += ms * v * st.p5.time.delta / scale;
+			
+			x += drift.x;
+			y += drift.y;
+			
+			var dist = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+			plane.distance += dist;
+			if (plane.distance > plane.range) {
+				plane.hull = 0;
+				plane.structure = 0;
+			}
+			
+			if (plane.target > -1) {
+				if (plane.type == "tl7-missile") {
+					var targetPlane = planes[plane.target];					
+					var targetDist = st.planes.calcPlaneDistance(plane, targetPlane);
+					if (dist >= targetDist) {
+						x = targetPlane.x;
+						y = targetPlane.y;
+					}
+					st.planes.shoot(plane);
+				}
+			}
+			
+			plane.x = x;
+			plane.y = y;
 		}
 	}
 };
