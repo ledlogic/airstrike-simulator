@@ -10,6 +10,9 @@ st.teams = {
 		"color": [204, 0, 0]
 	},
 	
+	init: function() {
+		st.log("st.teams.init");
+	},
 	getTeam: function(team) {
 		return st.teams[team];
 	},

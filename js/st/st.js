@@ -26,13 +26,11 @@ var st = {
 
 		st.math.init();
 		st.grid.init();
-		st.render.init();
 		st.cities.init();
 		st.clouds.init();
 		st.smokes.init();
+		st.teams.init();
 		st.time.init();
-
-		st.render.render();
 	},
 	
 	initBackground: function() {
