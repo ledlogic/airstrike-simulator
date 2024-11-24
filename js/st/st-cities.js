@@ -34,6 +34,17 @@ st.cities = {
 		};
 		st.cities.cities.push(city);
 		return city;		
+	},
+	
+	getTeamCity: function(team) {
+		var cities = st.cities.cities;
+		for (var i = 0; i < cities.length; i++) {
+			var city = cities[i];
+			if (city.team == team) {
+				return city;
+			}
+		}
+		return null;
 	}
 };
 

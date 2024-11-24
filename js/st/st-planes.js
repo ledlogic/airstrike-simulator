@@ -15,7 +15,7 @@ st.planes = {
 			hull: 3,
 			structure: 3,
 			armour: 6,
-			range: 1e9,
+			range: 410e3,
 			weapons: [
 				{
 					"type": "gun",
@@ -34,7 +34,7 @@ st.planes = {
 			hull: 3,
 			structure: 8,
 			armour: 4,
-			range: 1e9,
+			range: 1050e3,
 			weapons: [
 				{
 					"type": "gun",
@@ -53,7 +53,7 @@ st.planes = {
 			hull: 1,
 			structure: 1,
 			armour: 4,
-			range: 1e9,
+			range: 630e3,
 			weapons: [
 				{
 					"type": "gun",
@@ -72,7 +72,7 @@ st.planes = {
 			hull: 32,
 			structure: 32,
 			armour: 6,
-			range: 1e9,
+			range: 5600e3,
 			weapons: [
 				{
 					"type": "gun",
@@ -112,7 +112,7 @@ st.planes = {
 			hull: 20,
 			structure: 20,
 			armour: 4,
-			range: 1e9,
+			range: 299e3,
 			weapons: [
 				{
 					"type": "missile",
@@ -120,7 +120,7 @@ st.planes = {
 					"arc": "f",
 					"d": 9,
 					"ap": "S",
-					"range": 65000 
+					"range": 65e3
 				}
 			],
 			smoke: false
@@ -132,7 +132,7 @@ st.planes = {
 			hull: 1,
 			structure: 1,
 			armour: 0,
-			range: 65000,
+			range: 65e3,
 			weapons: [
 				{
 					"type": "gun",
@@ -201,6 +201,7 @@ st.planes = {
 			a: a,
 			homeAngle: homeAngle,
 			distance: 0,
+			landed: false,
 			v: data.v,
 			target: -1,
 			targetA: -1,
@@ -215,6 +216,10 @@ st.planes = {
 			brightnessDelta: 0
 		};
 		return plane;
+	},
+	
+	isFlying: function(plane) {
+		return !plane.landed && plane.structure > 0;
 	},
 
 	minArrDistance: function(distArr) {
@@ -422,7 +427,7 @@ st.time.updateTargets = function() {
 				plane.shootDelayed = 0;
 			}
 		}
-		if (plane.target == -1) {
+		if (!plane.landed && plane.target == -1) {
 			st.time.updateTarget(i, lastTarget);
 		}
 	}
@@ -431,9 +436,11 @@ st.time.updateTargets = function() {
 st.time.updateTarget = function(index, lastTarget) {
 	var planes = st.planes.planes;
 	var indexPlane = planes[index];
-	var distArr = st.planes.getTargetDistances(index, lastTarget);
-	var minDistIndex = st.planes.minArrDistance(distArr);
-	indexPlane.target = minDistIndex;
+	if (!indexPlane.landed) {
+		var distArr = st.planes.getTargetDistances(index, lastTarget);
+		var minDistIndex = st.planes.minArrDistance(distArr);
+		indexPlane.target = minDistIndex;
+	}
 }
 
 st.time.updateAngles = function() {
@@ -441,7 +448,7 @@ st.time.updateAngles = function() {
 	for (var i = 0; i < planes.length; i++) {
 		var plane = planes[i];
 		if (plane.structure > 0) {
-			if (plane.target > -1 && i != plane.target && planes[plane.target].structure > 0) {
+			if (!plane.landed && plane.target > -1 && i != plane.target && planes[plane.target].structure > 0 && plane.distance < plane.data.range) {
 				var dist = st.planes.calcIndexDistance(i, plane.target) * st.p5.time.delta;
 				plane.targetDist = dist;
 				
@@ -453,14 +460,24 @@ st.time.updateAngles = function() {
 				plane.targetA = targetA;
 				st.time.updateAngle(plane, targetA);
 			} else {
-				var targetA = plane.homeAngle;
+				var city = st.cities.getTeamCity(plane.team);
+				var targetA = st.planes.calcPlaneAngle(plane, city); 
 				st.time.updateAngle(plane, targetA);
+				
+				var dist = st.planes.calcPlaneDistance(plane, city);
+				if (dist < 1e3) {
+					plane.landed = true;
+				}
 			}
 		}
 	}
 };
 	
 st.time.updateAngle = function(plane, targetA) {
+	if (plane.landed) {
+		return;
+	}
+	
 	var planeA = plane.a;
 	var dA = (targetA - planeA);
 	if (dA > 180) {
@@ -514,7 +531,7 @@ st.time.updatePositions = function() {
 	var drift = st.clouds.drift;
 	for (var i = 0; i < planes.length; i++) {
 		var plane = planes[i];
-		if (plane.structure > 0) {
+		if (st.planes.isFlying(plane)) {
 			var x = plane.x;
 			var y = plane.y;
 			var a = plane.a;
@@ -525,16 +542,16 @@ st.time.updatePositions = function() {
 
 			var mc = Math.cos(canvasa / 180.0 * Math.PI);
 			var ms = Math.sin(canvasa / 180.0 * Math.PI);
-
-			x += mc * v * st.p5.time.delta / scale;
-			y += ms * v * st.p5.time.delta / scale;
+			var d = v * st.p5.time.delta / scale;
+			x += mc * d;
+			y += ms * d;
+			plane.distance += d;
 			
 			x += drift.x;
 			y += drift.y;
 			
-			var dist = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
-			plane.distance += dist;
-			if (plane.distance > plane.range) {
+			// out of fuel
+			if (plane.distance > plane.data.range) {
 				plane.hull = 0;
 				plane.structure = 0;
 			}
@@ -563,7 +580,7 @@ st.p5.drawPlanes = function(opts) {
 	var mode = opts.mode;
 	for (var i = 0; i < planes.length; i++) {
 		var plane = planes[i];
-		if (plane.structure > 0) {
+		if (st.planes.isFlying(plane)) {
 			var x = plane.x / ratio;
 			var y = -plane.y / ratio;
 			var a = plane.a;
@@ -935,11 +952,16 @@ st.p5.drawPlanes = function(opts) {
 				text(t, x - 8, y + 48);
 
 				var t = " hull: " + Math.round(plane.hull) + ", structure: " + Math.round(plane.structure);
-				text(t, x - 8, y + 62);
+				text(t, x - 8, y + 60);
+
+				// fuel remaining
+				var f = Math.round(Math.max(0, 1 - plane.distance / plane.data.range) * 100.0);
+				var t = " fuel: " + f + "%";
+				text(t, x - 8, y + 72);
 
 				if (plane.target != -1) {
 					var t = "-> p" + plane.target + ": " + Math.round(plane.targetDist) + "m";
-					text(t, x - 8, y + 72);
+					text(t, x - 8, y + 84);
 				}
 			}
 		}

@@ -64,7 +64,7 @@ st.time.updateSmokes = function() {
 				plane.smokes = _.drop(smokes, minJ);
 			}
 
-			if (plane.structure > 0) {
+			if (st.planes.isFlying(plane)) {
 				var x = plane.x;
 				var y = plane.y;
 				var pt = {
