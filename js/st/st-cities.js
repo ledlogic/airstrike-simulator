@@ -6,6 +6,8 @@ st.cities = {
 	cities: [],
 	
 	init: function() {
+		st.log("st.cities.init");
+		
 		st.cities.createCity("soviet", "Base");
 		st.cities.createCity("german", "Base");
 	},
