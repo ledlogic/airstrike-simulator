@@ -51,5 +51,42 @@ st.math = {
 		ret = Math.min(ret, 255);
 		ret = Math.max(ret, 0);
 		return ret;
+	},
+	distance: function(dx, dy) {
+		return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+	},
+	/** 
+	 * Returns the (absolute) distance from p1 to p2
+	 */
+	calcPointDistance: function(p1, p2) {
+		var dx = (p2.x - p1.x);
+		var dy = (p2.y - p1.y);
+		var d = st.math.distance(dx, dy);
+		return d;
+	},
+	/** 
+	 * Returns the geo angle difference from p1 to p2
+	 */
+	calcPointAngle: function(p1, p2) {
+		var dx = (p2.x - p1.x);
+		var dy = (p2.y - p1.y);
+		
+		// special radians with extra cases
+		var theta = Math.atan2(dy, dx);
+		
+		// convert to degrees
+		theta *= 180.0 / Math.PI;
+		
+		// convert to geographic
+		theta = 90.0 - theta;
+		
+		while (theta > 360.0) {
+			theta -= 360.0;
+		}
+		while (theta < 0.0) {
+			theta += 360.0;
+		}
+
+		return theta;
 	}
 };

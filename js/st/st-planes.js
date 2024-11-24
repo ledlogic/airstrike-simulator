@@ -2,6 +2,8 @@
 
 const MAX_TO_CRUISE = 2.0 / 3.0;
 const KPH_TO_MPM = 1000 / 60 / 10;
+const BASE_LANDING_DISTANCE = 0.5e3;
+const BASE_PATTERN_DISTANCE = 5 * BASE_LANDING_DISTANCE;
 
 st.planes = {
 	
@@ -267,14 +269,7 @@ st.planes = {
 		var planes = st.planes.planes;
 		var p1 = planes[i1];
 		var p2 = planes[i2];
-		var d = st.planes.calcPlaneDistance(p1, p2);
-		return d;
-	},
-
-	calcPlaneDistance: function(p1, p2) {
-		var dx = (p2.x - p1.x);
-		var dy = (p2.y - p1.y);
-		var d = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+		var d = st.math.calcPointDistance(p1, p2);
 		return d;
 	},
 	
@@ -282,34 +277,8 @@ st.planes = {
 		var planes = st.planes.planes;
 		var p1 = planes[i1];
 		var p2 = planes[i2];
-		var d = st.planes.calcPlaneAngle(p1, p2);
+		var d = st.math.calcPointAngle(p1, p2);
 		return d;
-	},
-
-	/** 
-	 * Returns the geo angle difference to the other point
-	 */
-	calcPlaneAngle: function(p1, p2) {
-		var dx = (p2.x - p1.x);
-		var dy = (p2.y - p1.y);
-		
-		// special radians with extra cases
-		var theta = Math.atan2(dy, dx);
-		
-		// convert to degrees
-		theta *= 180.0 / Math.PI;
-		
-		// convert to geographic
-		theta = 90.0 - theta;
-		
-		while (theta > 360.0) {
-			theta -= 360.0;
-		}
-		while (theta < 0.0) {
-			theta += 360.0;
-		}
-
-		return theta;
 	},
 	
 	shoot: function(plane) {
@@ -321,7 +290,7 @@ st.planes = {
 		//st.log("plane.shootDelayed[" + plane.shootDelayed + "]");
 		
 		_.each(weapons, function(weapon) {
-			var dist = st.planes.calcPlaneDistance(plane, targetPlane);
+			var dist = st.math.calcPointDistance(plane, targetPlane);
 			var canHit = (weapon.arc == "t") || (weapon.arc == "f" && Math.abs(plane.targetA - plane.a) < MAX_SHOOT_BULLET_DELTA_ANGLE);
 			canHit = canHit && dist < st.planes.getWeaponDist(weapon);
 			if (canHit) {
@@ -447,8 +416,8 @@ st.time.updateAngles = function() {
 	var planes = st.planes.planes;
 	for (var i = 0; i < planes.length; i++) {
 		var plane = planes[i];
-		if (plane.structure > 0) {
-			if (!plane.landed && plane.target > -1 && i != plane.target && planes[plane.target].structure > 0 && plane.distance < plane.data.range) {
+		if (st.planes.isFlying(plane)) {
+			if (plane.target > -1 && i != plane.target && planes[plane.target].structure > 0 && plane.distance < plane.data.range) {
 				var dist = st.planes.calcIndexDistance(i, plane.target) * st.p5.time.delta;
 				plane.targetDist = dist;
 				
@@ -461,11 +430,14 @@ st.time.updateAngles = function() {
 				st.time.updateAngle(plane, targetA);
 			} else {
 				var city = st.cities.getTeamCity(plane.team);
-				var targetA = st.planes.calcPlaneAngle(plane, city); 
+				var targetA = st.math.calcPointAngle(plane, city); 
 				st.time.updateAngle(plane, targetA);
 				
-				var dist = st.planes.calcPlaneDistance(plane, city);
-				if (dist < 1e3) {
+				var dist = st.math.calcPointDistance(plane, city);
+				if (dist < BASE_PATTERN_DISTANCE) {
+					plane.v = plane.data.minv + 100;
+				}
+				if (dist < BASE_LANDING_DISTANCE) {
 					plane.landed = true;
 				}
 			}
@@ -559,7 +531,7 @@ st.time.updatePositions = function() {
 			if (plane.target > -1) {
 				if (plane.type == "tl7-missile") {
 					var targetPlane = planes[plane.target];					
-					var targetDist = st.planes.calcPlaneDistance(plane, targetPlane);
+					var targetDist = st.math.calcPointDistance(plane, targetPlane);
 					if (dist >= targetDist) {
 						x = targetPlane.x;
 						y = targetPlane.y;

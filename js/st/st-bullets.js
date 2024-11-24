@@ -3,6 +3,7 @@
 const MAX_SHOOT_BULLET_DELTA_ANGLE = 20;
 const BULLET_V = 3730 * KPH_TO_MPM;
 const EXPLOSION_V = 373 * KPH_TO_MPM;
+const EXPLOSION_COLOR_VELOCITY = 0.025;
 
 // bullets/shells
 st.bullets = {
@@ -46,25 +47,28 @@ st.p5.drawBullets = function() {
 
 	for (var i = 0; i < bullets.length; i++) {
 		var bullet = bullets[i];
-		var x = bullet.x;
-		var y = bullet.y;
-		var a = bullet.a;
-		var v = bullet.v / 2.5;
-
-		// convert from geographic
-		var canvasa = 90.0 - a;
-
-		var mc = Math.cos(canvasa / 180.0 * Math.PI);
-		var ms = Math.sin(canvasa / 180.0 * Math.PI);
-
-		stroke(0, 0, 0, 0);
-		var cnt = st.math.randomBetween(bullet.cnt, bullet.cnt * 2);
-		for (var b = 0; b < cnt; b++) {
-			var xb = (x + b * mc * v * st.p5.time.delta / scale) / ratio;
-			var yb = (-y - b * ms * v * st.p5.time.delta / scale) / ratio;
+		
+		if (bullet.active) {
+			var x = bullet.x;
+			var y = bullet.y;
+			var a = bullet.a;
+			var v = bullet.v / 2.5;
+	
+			// convert from geographic
+			var canvasa = 90.0 - a;
+	
+			var mc = Math.cos(canvasa / 180.0 * Math.PI);
+			var ms = Math.sin(canvasa / 180.0 * Math.PI);
+	
 			stroke(0, 0, 0, 0);
-			fill(bullet.color.r, bullet.color.g, bullet.color.b, Math.round(st.math.randomBetween(200, 255)));
-			circle(xb, yb, 2);
+			var cnt = st.math.randomBetween(bullet.cnt, bullet.cnt * 2);
+			for (var b = 0; b < cnt; b++) {
+				var xb = (x + b * mc * v * st.p5.time.delta / scale) / ratio;
+				var yb = (-y - b * ms * v * st.p5.time.delta / scale) / ratio;
+				stroke(0, 0, 0, 0);
+				fill(bullet.color.r, bullet.color.g, bullet.color.b, Math.round(st.math.randomBetween(200, 255)));
+				circle(xb, yb, 2);
+			}
 		}
 	}
 };
@@ -88,18 +92,22 @@ st.time.updateBullets = function() {
 
 			var mc = Math.cos(canvasa / 180.0 * Math.PI);
 			var ms = Math.sin(canvasa / 180.0 * Math.PI);
+			var d = v * st.p5.time.delta / scale;
+			var deltaX = mc * d;
+			var deltaY = ms * d;
 
-			var deltaX = mc * v * st.p5.time.delta / scale;
-			var deltaY = ms * v * st.p5.time.delta / scale;
-
-			var dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-			bullet.distance += dist;
+			bullet.distance += d;
+			
 			if (bullet.distance > bullet.range) {
 				bullet.active = false;
 			}
-			if (bullet.a == 0) {
+			
+			var dr = Math.abs(bullet.color.r - 120);
+			var dg = Math.abs(bullet.color.g - 120);
+			var db = Math.abs(bullet.color.b - 120);
+			if (dr + dg + db < 10) {
 				bullet.active = false;
-			}
+			}			
 			
 			if (bullet.active) {
 				bullet.x = x + deltaX + drift.x;
@@ -116,9 +124,9 @@ st.time.updateBullets = function() {
 			}			
 		}
 		if (bullet.active) {
-			bullet.color.r = st.math.ratioAverage(bullet.color.r, 120, 0.01);
-			bullet.color.g = st.math.ratioAverage(bullet.color.g, 120, 0.01);
-			bullet.color.b = st.math.ratioAverage(bullet.color.b, 120, 0.01);
+			bullet.color.r = st.math.ratioAverage(bullet.color.r, 120, EXPLOSION_COLOR_VELOCITY);
+			bullet.color.g = st.math.ratioAverage(bullet.color.g, 120, EXPLOSION_COLOR_VELOCITY);
+			bullet.color.b = st.math.ratioAverage(bullet.color.b, 120, EXPLOSION_COLOR_VELOCITY);
 			bullet.v *= 0.95;
 			newBullets.push(bullet);
 		}
