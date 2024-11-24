@@ -185,7 +185,6 @@ st.planes = {
 			var index = st.planes.planes.length;
 			plane.index = index;
 			st.planes.planes[index] = plane;
-			st.log([design, plane]);
 		}
 	},
 
@@ -923,12 +922,12 @@ st.p5.drawPlanes = function(opts) {
 			}
 			
 			// detail
-			if (st.planes.detailVisible) {
-				fill(fuselageColor);
-				textFont(st.p5.font);
-				var t = "p" + i + " (" + plane.design + ")";
-				text(t, x - 8, y + 24);
+			fill(fuselageColor);
+			textFont(st.p5.font);
+			var t = "p" + i + " (" + plane.design + ")";
+			text(t, x - 8, y + 24);
 
+			if (st.planes.detailVisible) {
  				var t = " (" + Math.round(plane.x) + "m, " + Math.round(plane.y) + "m, " + Math.round(a) + "°)";
 				text(t, x - 8, y + 36);
 	
@@ -941,60 +940,6 @@ st.p5.drawPlanes = function(opts) {
 				if (plane.target != -1) {
 					var t = "-> p" + plane.target + ": " + Math.round(plane.targetDist) + "m";
 					text(t, x - 8, y + 72);
-				}
-			} else {
-				fill(fuselageColor);
-				textFont(st.p5.font);
-				var t = "p" + i;
-				text(t, x - 8, y + 24);					
-			}			
-			
-			// weapon radius
-			if (mode != "shadow" && plane.target != -1) {
-				var dist = st.planes.getAllWeaponDist(plane);	
-				var adelta = 10;
-				
-				var amin = 0;
-				var amax = 0;
-				
-				switch (plane.weapons[0].arc) {
-					case "f":
-						amin = a - 20;
-						amax = a + 20;
-						break;
-					default:
-						amin = a - 180;
-						amax = a + 180;
-						break;
-				}
-									
-				for (var a1 = amin; a1 < amax; a1 += adelta) {
-					var canvasa1 = 90.0 - a1;
-					var x1 = x + (dist * Math.cos(canvasa1 / 180.0 * Math.PI)) / ratio;
-					var y1 = y - (dist * Math.sin(canvasa1 / 180.0 * Math.PI)) / ratio;
-					var x2 = x + (dist * Math.cos((canvasa1 - adelta) / 180.0 * Math.PI)) / ratio;
-					var y2 = y - (dist * Math.sin((canvasa1 - adelta) / 180.0 * Math.PI)) / ratio;
-					strokeWeight(1);
-					switch (plane.shootDelayed) {
-						case 0:
-							stroke("green");
-							break;
-						case 1:
-						case 2:
-							stroke("yellow");
-							break;
-						case 3:
-						case 4:
-							stroke("orange");
-							break;
-						case 5:
-							stroke("red");
-							break;
-						default: 
-							stroke("black");
-							break;
-					}
-					line(x1, y1, x2, y2);
 				}
 			}
 		}
