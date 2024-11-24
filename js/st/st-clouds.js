@@ -32,6 +32,8 @@ st.clouds = {
 		$("#st-cb-clouds").attr("checked", st.clouds.visible ? "checked" : "");
 	},
 	initClouds: function() {
+		st.log("st.clouds.initClouds");
+
 		var qtyClouds = st.math.randomBetween(st.clouds.MIN_CLOUDS, st.clouds.MAX_CLOUDS);
 		//st.log(qtyClouds);
 		

@@ -4,6 +4,9 @@ const MAX_TO_CRUISE = 2.0 / 3.0;
 const KPH_TO_MPM = 1000 / 60 / 10;
 
 st.planes = {
+	
+	detailVisible: true,
+	
 	data: {
 		"bf-109": {
 			type: "tl6-propfighter",
@@ -147,41 +150,9 @@ st.planes = {
 	planes: [],
 
 	init: function() {
-		var url = $.url();
-		var simulation = url.param('simulation');
-		switch (simulation) {
-			case "angle":
-				var angle = parseFloat(url.param('angle'),0);
-				angle = 90 - angle;
-				var r = 5000;
-				var x1 = Math.cos(angle / 180 * Math.PI) * r;
-				var y1 = Math.sin(angle / 180 * Math.PI) * r;
-				var x2 = Math.cos((angle + 180) / 180 * Math.PI) * r;
-				var y2 = Math.sin((angle + 180) / 180 * Math.PI) * r;
-				st.planes.createPlanes("soviet", "po-2", 1, {x: x1, y: y1});
-				st.planes.createPlanes("german", "bf-109", 1, {x: x2, y: y2});
-				return;
-			case "acti":
-				st.planes.createPlanes("soviet", "po-2", 12);
-				st.planes.createPlanes("german", "bf-109", 3);
-				return;
-			case "actii":
-				st.planes.createPlanes("soviet", "po-2", 12);
-				st.planes.createPlanes("german", "bf-109", 6);
-				st.planes.createPlanes("german", "he-177", 2);
-				return;
-			case "actiii":
-				st.planes.createPlanes("soviet", "po-2", 6);
-				st.planes.createPlanes("soviet", "mig-25", 6);
-				st.planes.createPlanes("soviet", "r-40", 24);
-				st.planes.createPlanes("german", "me-262", 6);
-				st.planes.createPlanes("german", "he-177", 2);
-				return;
-			default:
-				st.planes.createPlanes("german", "bf-109", 3);
-				st.planes.createPlanes("soviet", "po-2", 12);
-				return;
-		}
+		st.log("st.planes.init");
+		
+		$("#st-cb-details").attr("checked", st.planes.detailsVisible ? "checked" : "");
 	},
 
 	createPlanes: function(team, design, qty, opts) {
@@ -952,7 +923,7 @@ st.p5.drawPlanes = function(opts) {
 			}
 			
 			// detail
-			if (opts.detail) {
+			if (st.planes.detailVisible) {
 				fill(fuselageColor);
 				textFont(st.p5.font);
 				var t = "p" + i + " (" + plane.design + ")";

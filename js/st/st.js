@@ -18,8 +18,11 @@ var st = {
 	},
 
 	init: function() {
+		st.log("st.init");
+		
 		st.initActions();
 		st.initBackground();
+		st.initSimulation();
 
 		st.math.init();
 		st.grid.init();
@@ -33,6 +36,8 @@ var st = {
 	},
 	
 	initBackground: function() {
+		st.log("st.initBackground");
+		
 		var urls = [
 			"img/minsk.jpg",
 			"img/novgorod.jpg",
@@ -44,12 +49,15 @@ var st = {
 	},
 	
 	initActions: function() {
+		st.log("st.initActions");
+		
 		$("body").css("-webkit-user-select", "none");
 		$("body").css("-moz-user-select", "none");
 		$("body").css("-ms-user-select", "none");
 		$("body").css("user-select", "none");
 		
 		$("#st-cb-clouds").on("click", function() { st.clouds.visible = !st.clouds.visible; } );
+		$("#st-cb-details").on("click", function() { st.planes.detailVisible = !st.planes.detailVisible; } );
 		$("#st-cb-grid").on("click", function() { st.grid.visible = !st.grid.visible; } );
 
 		$(".st-act-i").on("click", function() {
@@ -65,6 +73,50 @@ var st = {
 		$(".st-reload").on("click", function() {
 			window.location.reload();
 		});
+	},
+	
+	initSimulation: function() {
+		st.log("st.initSimulation");
+
+		var url = $.url();
+		var simulation = url.param('simulation');
+		switch (simulation) {
+			case "angle":
+				var angle = parseFloat(url.param('angle'),0);
+				angle = 90 - angle;
+				var r = 5000;
+				var x1 = Math.cos(angle / 180 * Math.PI) * r;
+				var y1 = Math.sin(angle / 180 * Math.PI) * r;
+				var x2 = Math.cos((angle + 180) / 180 * Math.PI) * r;
+				var y2 = Math.sin((angle + 180) / 180 * Math.PI) * r;
+				st.planes.createPlanes("soviet", "po-2", 1, {x: x1, y: y1});
+				st.planes.createPlanes("german", "bf-109", 1, {x: x2, y: y2});
+				return;
+			case "acti":
+				st.planes.createPlanes("soviet", "po-2", 12);
+				st.planes.createPlanes("german", "bf-109", 3);
+				$(".st-act-i").addClass("st-active");
+				return;
+			case "actii":
+				st.planes.createPlanes("soviet", "po-2", 12);
+				st.planes.createPlanes("german", "bf-109", 6);
+				st.planes.createPlanes("german", "he-177", 2);
+				$(".st-act-ii").addClass("st-active");
+				return;
+			case "actiii":
+				st.planes.createPlanes("soviet", "po-2", 6);
+				st.planes.createPlanes("soviet", "mig-25", 6);
+				st.planes.createPlanes("soviet", "r-40", 24);
+				st.planes.createPlanes("german", "me-262", 6);
+				st.planes.createPlanes("german", "he-177", 2);
+				$(".st-act-iii").addClass("st-active");
+				return;
+			default:
+				st.planes.createPlanes("soviet", "po-2", 12);
+				st.planes.createPlanes("german", "bf-109", 3);
+				$(".st-act-i").addClass("st-active");
+				return;
+		}
 	}
 };
 

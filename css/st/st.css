@@ -89,6 +89,11 @@ h4 {
 	right: 10px;
 	height: 10px;
 }
+.st-actions .st-active {
+	border-color: green;
+	border-width: 2px;
+	color: green;
+}
 .st-footer {
 	background: #c2c2c2;
 	font-weight: bold;
