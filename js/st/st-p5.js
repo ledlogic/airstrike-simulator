@@ -58,5 +58,4 @@ function draw() {
 
 function preload() {
 	st.p5.font = loadFont('./font/inconsolata.otf');
-	st.p5.backgroundImg = loadImage('img/pripyat-river.jpg');
 }

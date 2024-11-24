@@ -1,9 +1,13 @@
 /* st-cities.js */
 
+const CITY_RADIUS = 500;
+
 st.cities = {
 	cities: [],
 	
 	init: function() {
+		st.cities.createCity("soviet", "Base");
+		st.cities.createCity("german", "Base");
 	},
 
 	createCity: function(team, name) {
@@ -41,14 +45,30 @@ st.p5.drawCities = function() {
 		
 		var xc = city.x / ratio;
 		var yc = -city.y / ratio;
+		var yr = CITY_RADIUS / ratio;
 		
-		fill(fuselageColor);
-		stroke(0, 0, 0, 0);
-		circle(xc, yc, 20);
+		strokeWeight(2.5);
+		fill(0,0,0,0);
+		stroke(fuselageColor);
+
+		var x1 = (city.x - CITY_RADIUS * 0.5) / ratio;
+		var y1 = (-city.y) / ratio;
+		var x2 = (city.x + CITY_RADIUS * 0.5) / ratio;
+		var y2 = (-city.y) / ratio;
+		line(x1, y1, x2, y2);
+		
+		var x1 = (city.x) / ratio;
+		var y1 = (-city.y - CITY_RADIUS * 0.5) / ratio;
+		var x2 = (city.x) / ratio;
+		var y2 = (-city.y + CITY_RADIUS * 0.5) / ratio;
+		line(x1, y1, x2, y2);
+
+		strokeWeight(5);
+		circle(xc, yc, yr);
 
 		fill(fuselageColor);
 		textFont(st.p5.font);
 		var t = city.name;
-		text(t, xc - 20, yc + 24);					
+		text(t, xc - 12, yc + 24);				
 	}
 };

@@ -24,6 +24,7 @@ var st = {
 		st.math.init();
 		st.grid.init();
 		st.render.init();
+		st.cities.init();
 		st.clouds.init();
 		st.smokes.init();
 		st.time.init();

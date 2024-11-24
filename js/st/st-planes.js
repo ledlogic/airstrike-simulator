@@ -164,19 +164,16 @@ st.planes = {
 			case "acti":
 				st.planes.createPlanes("soviet", "po-2", 12);
 				st.planes.createPlanes("german", "bf-109", 3);
-				st.cities.createCity("soviet", "Capital");
 				return;
 			case "actii":
 				st.planes.createPlanes("soviet", "po-2", 12);
 				st.planes.createPlanes("german", "bf-109", 6);
 				st.planes.createPlanes("german", "he-177", 2);
-				st.cities.createCity("soviet", "Capital");
 				return;
 			case "actiii":
 				st.planes.createPlanes("soviet", "po-2", 6);
 				st.planes.createPlanes("soviet", "mig-25", 6);
 				st.planes.createPlanes("soviet", "r-40", 24);
-				st.cities.createCity("soviet", "Capital");
 				st.planes.createPlanes("german", "me-262", 6);
 				st.planes.createPlanes("german", "he-177", 2);
 				return;
