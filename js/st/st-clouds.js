@@ -23,9 +23,19 @@ st.clouds = {
 
 	clouds: [],
 	
+	visible: true,
+	
 	init: function() {
 		st.log("st.clouds.init");
 		st.clouds.initClouds();
+		
+		$("body").css("-webkit-user-select", "none");
+		$("body").css("-moz-user-select", "none");
+		$("body").css("-ms-user-select", "none");
+		$("body").css("user-select", "none");
+		
+		$("#st-cb-clouds").attr("checked", st.clouds.visible ? "checked" : "");
+		$("#st-cb-clouds").on("click", function() { st.clouds.visible = !st.clouds.visible; } );
 	},
 	initClouds: function() {
 		var qtyClouds = st.math.randomBetween(st.clouds.MIN_CLOUDS, st.clouds.MAX_CLOUDS);
@@ -100,6 +110,10 @@ st.clouds = {
 };
 
 st.p5.drawClouds = function() {
+	if (!st.clouds.visible) {
+		return;
+	}
+	
 	var ratio = st.p5.real.ratio;
 	var clouds = st.clouds.clouds;
 

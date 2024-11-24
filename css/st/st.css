@@ -62,6 +62,20 @@ h4 {
 	width: 100%;
 	display: inline-block;
 }
+.st-cbs {
+	font-size: 10px;
+	margin: 0;
+	position: absolute;
+	padding: 0;
+	top: 0px;
+	margin-top:4px;
+	right: 50%;
+	height: 10px;
+}
+.st-cbs label {
+	padding: 0 4px 0 4px;
+	vertical-align: middle;
+}
 .st-actions {
 	font-size: 10px;
 	margin: 0;

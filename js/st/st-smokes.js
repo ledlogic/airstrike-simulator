@@ -1,5 +1,11 @@
 /* st-smokes.js */
 
+st.smokes = {
+	init: function() {
+		st.log("st.smokes.init");
+	}
+};
+
 st.p5.drawSmokes = function() {
 	var ratio = st.p5.real.ratio;
 	var planes = st.planes.planes;
@@ -16,7 +22,7 @@ st.p5.drawSmokes = function() {
 				stroke(0,0,0,0);
 				fill(55, 55, 55, a);
 				circle(x, y, 5);
-			} else if (j > 0) {
+			} else if (!plane.smoke && j > 0) {
 				var x1 = x;
 				var y1 = y;
 

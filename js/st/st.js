@@ -20,9 +20,11 @@ var st = {
 	init: function() {
 		st.initActions();
 		st.initBackground();
+
 		st.math.init();
 		st.render.init();
 		st.clouds.init();
+		st.smokes.init();
 		st.time.init();
 
 		st.render.render();

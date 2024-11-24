@@ -175,7 +175,7 @@ st.planes = {
 			case "actiii":
 				st.planes.createPlanes("soviet", "po-2", 6);
 				st.planes.createPlanes("soviet", "mig-25", 6);
-				st.planes.createPlanes("soviet", "r-40", 4);
+				st.planes.createPlanes("soviet", "r-40", 24);
 				st.cities.createCity("soviet", "Capital");
 				st.planes.createPlanes("german", "me-262", 6);
 				st.planes.createPlanes("german", "he-177", 2);
