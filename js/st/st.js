@@ -22,6 +22,7 @@ var st = {
 		st.initBackground();
 
 		st.math.init();
+		st.grid.init();
 		st.render.init();
 		st.clouds.init();
 		st.smokes.init();
@@ -42,9 +43,14 @@ var st = {
 	},
 	
 	initActions: function() {
-		$(".st-reload").on("click", function() {
-			window.location.reload();
-		});
+		$("body").css("-webkit-user-select", "none");
+		$("body").css("-moz-user-select", "none");
+		$("body").css("-ms-user-select", "none");
+		$("body").css("user-select", "none");
+		
+		$("#st-cb-clouds").on("click", function() { st.clouds.visible = !st.clouds.visible; } );
+		$("#st-cb-grid").on("click", function() { st.grid.visible = !st.grid.visible; } );
+
 		$(".st-act-i").on("click", function() {
 			window.location.replace("?simulation=acti");
 		});
@@ -53,6 +59,10 @@ var st = {
 		});
 		$(".st-act-iii").on("click", function() {
 			window.location.replace("?simulation=actiii");
+		});
+
+		$(".st-reload").on("click", function() {
+			window.location.reload();
 		});
 	}
 };

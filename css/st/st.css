@@ -72,6 +72,9 @@ h4 {
 	right: 50%;
 	height: 10px;
 }
+.st-cbs input {
+	margin-left: 20px;
+}
 .st-cbs label {
 	padding: 0 4px 0 4px;
 	vertical-align: middle;

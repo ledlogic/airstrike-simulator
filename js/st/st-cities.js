@@ -30,3 +30,25 @@ st.cities = {
 		return city;		
 	}
 };
+
+st.p5.drawCities = function() {
+	var ratio = st.p5.real.ratio;
+	var cities = st.cities.cities;
+	for (var i = 0; i < cities.length; i++) {
+		var city = cities[i];
+		var team = city.team;
+		var fuselageColor = st.teams.getTeamColor(team);
+		
+		var xc = city.x / ratio;
+		var yc = -city.y / ratio;
+		
+		fill(fuselageColor);
+		stroke(0, 0, 0, 0);
+		circle(xc, yc, 20);
+
+		fill(fuselageColor);
+		textFont(st.p5.font);
+		var t = city.name;
+		text(t, xc - 20, yc + 24);					
+	}
+};
