@@ -606,7 +606,7 @@ st.p5 = {
 				var xb = (x + b * mc * v * st.p5.time.delta / scale) / ratio;
 				var yb = (-y - b * ms * v * st.p5.time.delta / scale) / ratio;
 				stroke(0, 0, 0, 0);
-				fill(58,58,58,Math.round(st.math.randomBetween(100,225)));
+				fill(120,120,120,Math.round(st.math.randomBetween(200,255)));
 				circle(xb, yb, 4);
 			}
 		}		

@@ -384,10 +384,18 @@ st.planes = {
 				if (targetPlane.structure <= 0) {
 					var explosionBulletDelta = 20;
 					for (var ai=0; ai<360; ai+=explosionBulletDelta) {
-						var r = targetPlane.r;
+						var r = 100;
 						var x = targetPlane.x + st.math.randomBetween(-r, r);
 						var y = targetPlane.y + st.math.randomBetween(-r, r);
-						var a = targetPlane.a + ai + st.math.dieN(explosionBulletDelta);
+						var a = targetPlane.a + 0.5 * ai + st.math.dieN(explosionBulletDelta);
+						
+						while (a > 360) {
+							a-= 360;
+						} 
+						while (a < 360) {
+							a+= 360;
+						}
+						
 						var bullet = st.bullets.createBullet(x, y, a, 1);
 						bullet.v = EXPLOSION_V;						
 					}
