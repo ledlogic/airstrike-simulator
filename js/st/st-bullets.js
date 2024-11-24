@@ -11,6 +11,7 @@ st.bullets = {
 	v: BULLET_V,
 
 	init: function() {
+		st.log("st.bullets.init");
 	},
 
 	createBullet: function(x, y, a, cnt) {
@@ -31,7 +32,7 @@ st.bullets = {
 
 	createExplosion: function(x, y, a, cnt) {
 		var bullet = st.bullets.createBullet(x, y, a, cnt);
-		bullet.v = EXPLOSION_V;
+		bullet.v = st.math.randomBetween(0, EXPLOSION_V);
 		var r = st.math.randomBetween(120, 255);
 		var g = st.math.randomBetween(0, r);
 		bullet.color = { r: r, g: g, b: 0 }
