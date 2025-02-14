@@ -92,7 +92,7 @@ var st = {
 				return;
 			case "acti":
 				st.planes.createPlanes("soviet", "po-2", 12);
-				st.planes.createPlanes("german", "bf-109", 2);
+				st.planes.createPlanes("german", "bf-109", 1);
 				$(".st-act-i").addClass("st-active");
 				return;
 			case "actii":
